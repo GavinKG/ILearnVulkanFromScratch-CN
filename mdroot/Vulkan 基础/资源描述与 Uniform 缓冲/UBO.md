@@ -1,0 +1,116 @@
+## UBO
+
+### 概念
+
+如上所述，资源描述分为很多种，由于这里要实现三维的变换，需要传入MVP矩阵，所以我们需要一种特定的资源描述，叫 Uniform Buffer Object。其对应shader中的uniform常量。
+
+在c++客户端中，一个我们需要的UBO结构体如下所示。注意：glm代数库中的`glm::mat4`类可直接对应上shader中`mat4`类型，即这两个类型二进制兼容，所以在复制到buffer时可以直接用`memcpy`函数。
+
+```c++
+struct UniformBufferObject {
+    glm::mat4 model;
+    glm::mat4 view;
+    glm::mat4 proj;
+};
+```
+
+之后，需要在Shader中更新对应的接收部分。**在这里**，`binding`关键字的作用和`location`类似，其需要在资源描述的布局中声明，但`binding`指的是和UBO绑定，而`location`和 Vertex Buffer 中特定顶点属性（在`VkVertexInputAttributeDescription`中声明）绑定。
+
+可以理解为：`location`代表的是流水线里的工序，而`binding`代表的是Shader外部的参考内容。这里关键词使用比较容易混淆，要加以（和上述很多`binding`）区分。
+
+```GLSL
+layout(binding = 0) uniform UniformBufferObject {
+    mat4 model;
+    mat4 view;
+    mat4 proj;
+} ubo;
+```
+
+在Shader中的用法举例如下：
+
+```GLSL
+void main() {
+    gl_position = ubo.proj * ubo.view * ubo.model * vec4(inPosition, 1.0)
+}
+```
+
+具体原理请见图形学坐标变换矩阵和齐次坐标的介绍。
+
+### 创建 Uniform Buffer
+
+由于其工作需要，每一帧都有可能对其进行数据的改变，就如这里的传递MVP的做法一样，所以这里没有必要为其声明staging buffer，而相反，场景中的顶点们一旦声明出来可能会有一段时间不进行修改（例如一个静态模型的查看程序）。
+
+由于 uniform buffer 需要在 command buffer 中被引用，而 command buffer 数量对应着 swap chain image 的数量，所以这里创建的 uniform buffer 数量与 swap chain image 的数量一致。
+
+同上，创建两个成员变量 `std::vector<VkBuffer> uniformBuffers` 和 `std::vector<VkDeviceMemory> uniformBuffersMemory` 并 `resize` 为 swap chain image 的数量。
+
+创建 uniform buffer 的时机和创建其它（vertex, index）buffer的时机相同。示例代码如下：
+
+```c++
+VkDeviceSize bufferSize = sizeof(UniformBufferObject);
+for (size_t i = 0; i < swapChainImages.size(); i++) {
+    createBuffer(bufferSize, 
+                 VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+                 VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+                 VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                 uniformBuffers[i],
+                 uniformBuffersMemory[i]);
+}
+```
+
+一旦声明，这些 buffer 就可以不去动它了，直到渲染结束。在`cleanupSwapChain` 时通过使用`vkDestroyBuffer` 和 `vkFreeMemory` 来释放空间。这也意味着当 swap chain 改动时，也要重新建立这些 uniform buffer。
+
+在 draw loop 中，当获取到 swap chain image 时，立刻对该帧的 uniform buffer 进行更新。在本例中，我们让示例quad持续转动。
+
+### 更新 Uniform Buffer
+
+这里就要进入到真正的变换运算环节了。首先通过捕获运行时长来计算旋转角度，即`angle = time * anglePerSec`。通过使用c++标准库中的的高精度时钟`std::chrono::high_resolution_clock`并在每次渲染中获取到该帧与**第一帧**的时间差（能用C++标准库就不用C函数，甚至是平台独立函数）：
+
+```c++
+static auto startTime = std::chrono::high_resolution_clock::now();
+auto currentTime = std::chrono::high_resolution_clock::now();
+float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count(); // 1stFrame ~ Now
+```
+
+接下来开始计算整套变换的MVP矩阵：
+
+* 通过`glm::rotate`（参数为：源变换矩阵（这里就为 $diag(1)$，因为没有更下层的变换了），旋转角度，旋转轴）得出**模型空间 --> 世界空间**变换矩阵。
+* 通过`glm::lookAt`（参数为：摄像机位置，观察点位置，”上“定义）得出**世界空间 --> 观察空间**变换矩阵。
+* 通过`glm::perspective`（参数为：FOV，长宽比 aspect ratio，近裁剪平面 near clip plane，远裁剪平面 far clip plane）得出**观察空间 --> 投影空间**的透视变换矩阵。
+
+示例代码如下：
+
+```c++
+ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+ubo.proj = glm::perspective(glm::radians(45.0f), swapChainExtent.width / (float) swapChainExtent.height, 0.1f, 10.0f);
+```
+
+由于 GLM 是给 OpenGL 设计的，所以其默认的裁剪空间 y 轴是与 DirectX（当然，还有Vulkan）相反的，这里使用 `ubo.proj[1][1] *= -1` 再给它反回来。
+
+算出所有变换矩阵后，使用和之前一样的方法配置内存映射，并将值`memcpy`到映射的内存中：
+
+```c++
+void* data;
+vkMapMemory(device, uniformBuffersMemory[currentImage], 0, sizeof(ubo), 0, &data);
+    memcpy(data, &ubo, sizeof(ubo));
+vkUnmapMemory(device, uniformBuffersMemory[currentImage]);
+```
+
+注意，使用UBO来更改每帧都在变化的变换矩阵其实并不是一个最优方法。最好的方法是使用`push_constants`来将数据量小但变化频繁的 uniform 变量提交到shader中，例如本例的变换矩阵们。这里的“数据量小”概念可以通过查看实例中的`VkPhysicalDeviceLimits::maxPushConstantSize`成员变量值。Vulkan要求最小值为128字节，而当前主流显卡一般也就有其两倍大（本机的 GTX 1070 和 UHD 630 均为256字节）。通过使用 push constants，向Shader传递内容可以绕过复杂的 buffer 分配环节，因为 push constants 其实就是流水线的一部分。
+
+### 数据对齐
+
+C++客户端的ubo内存（uniform 变量）布局要遵循Vulkan的对齐标准才能将有效的信息传递给shader，具体定义可以在Vulkan官网上查到，这里glm已经帮我们进行二进制兼容了。同时，其数据起始地址要是 16 bytes 的倍数，所以要使用 `alignas(16)` 对齐，例如：
+
+```
+struct UniformBufferObject {
+    alignas(16) glm::vec2 foo;
+    alignas(16) glm::mat4 model;
+    alignas(16) glm::mat4 view;
+    alignas(16) glm::mat4 proj;
+};
+```
+
+glm在设计的时候也考虑到了这一点。在include之前使用`GLM_FORCE_DEFAULT_ALIGNED_GENTYPES`来强制glm帮我们进行数据的 16-byte 对齐。但当在遇到嵌套结构体时（Shader也可以对应的用结构体哦）还是需要手动对齐数据。
+
