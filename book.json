@@ -1,0 +1,20 @@
+
+{
+    "title" : "Vulkan 学习笔记",
+    "author" : "Gavin KG",
+    "language" : "zh-hans",
+    "plugins" : [
+        "-sharing",
+		"github-buttons"
+    ],
+	"pluginsConfig": {
+        "github-buttons": {
+            "buttons": [{
+                "user": "GavinKG",
+                "repo": "ILearnVulkanFromScratch-CN",
+                "type": "star",
+                "size": "small"
+              }]
+        }
+    }
+}
