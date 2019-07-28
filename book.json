@@ -5,7 +5,9 @@
     "language" : "zh-hans",
     "plugins" : [
         "-sharing",
-		"github-buttons"
+		"github-buttons",
+		"expandable-chapters-small",
+		"splitter"
     ],
 	"pluginsConfig": {
         "github-buttons": {
