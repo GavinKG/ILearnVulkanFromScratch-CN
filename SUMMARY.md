@@ -191,7 +191,9 @@
   * [Compute Shader](mdroot/Vulkan 进阶/Compute Shader.md)
       * [基本流程](mdroot/Vulkan 进阶/Compute Shader/基本流程.md)
       * [Shader 初见：图像处理](mdroot/Vulkan 进阶/Compute Shader/Shader 初见：图像处理.md)
-      * [GPU 粒子系统](mdroot/Vulkan 进阶/Compute Shader/GPU 粒子系统.md)
+      * [GPU 粒子系统初步](mdroot/Vulkan 进阶/Compute Shader/GPU 粒子系统初步.md)
+      * [GPU 粒子系统进阶：N体模拟](mdroot/Vulkan 进阶/Compute Shader/GPU 粒子系统进阶：N体模拟.md)
+      * [光线追踪](mdroot/Vulkan 进阶/Compute Shader/光线追踪.md)
   
 * [绘制进阶](mdroot/绘制进阶.md)
     * [光照](mdroot/绘制进阶/光照.md)
