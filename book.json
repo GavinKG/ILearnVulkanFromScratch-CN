@@ -2,12 +2,14 @@
 {
     "title" : "Vulkan 学习笔记",
     "author" : "Gavin KG",
+	"description" : "Vulkan 学习笔记",
     "language" : "zh-hans",
     "plugins" : [
         "-sharing",
 		"github-buttons",
 		"expandable-chapters-small",
-		"splitter"
+		"splitter",
+		"sitemap-general"
     ],
 	"pluginsConfig": {
         "github-buttons": {
@@ -17,6 +19,9 @@
                 "type": "star",
                 "size": "small"
               }]
-        }
+        },
+		"sitemap-general": {
+			"prefix": "https://gavinkg.github.io/ILearnVulkanFromScratch-CN/"
+		}
     }
 }
