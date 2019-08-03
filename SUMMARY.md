@@ -144,10 +144,10 @@
     * [渲染流程](mdroot/Vulkan 进阶/离屏渲染/渲染流程.md)
     
     * [渲染资源清单](mdroot/Vulkan 进阶/离屏渲染/渲染资源清单.md)
-    * [截取屏幕](mdroot/Vulkan 进阶/截取屏幕.md)
-      * [原理](mdroot/Vulkan 进阶/截取屏幕/原理.md)
+  * [截取屏幕](mdroot/Vulkan 进阶/截取屏幕.md)
+    * [原理](mdroot/Vulkan 进阶/截取屏幕/原理.md)
   
-      * [PPM 格式](mdroot/Vulkan 进阶/截取屏幕/PPM 格式.md)
+    * [PPM 格式](mdroot/Vulkan 进阶/截取屏幕/PPM 格式.md)
   * [模板缓冲和模板测试](mdroot/Vulkan 进阶/模板缓冲和模板测试.md)
     * [物体描边效果](mdroot/Vulkan 进阶/模板缓冲和模板测试/物体描边效果.md)
     
@@ -156,32 +156,26 @@
     * [渲染流程](mdroot/Vulkan 进阶/模板缓冲和模板测试/渲染流程.md)
     
     * [物体描边 Shader](mdroot/Vulkan 进阶/模板缓冲和模板测试/物体描边 Shader.md)
-    * [使用第三方库加载模型](mdroot/Vulkan 进阶/使用第三方库加载模型.md)
-    
-    * [tiny_obj_loader](mdroot/Vulkan 进阶/使用第三方库加载模型/tiny_obj_loader.md)
-    
-    * [Open Asset Import Library](mdroot/Vulkan 进阶/使用第三方库加载模型/Open Asset Import Library.md)
+  * [使用第三方库加载模型](mdroot/Vulkan 进阶/使用第三方库加载模型.md)
+      * [tiny_obj_loader](mdroot/Vulkan 进阶/使用第三方库加载模型/tiny_obj_loader.md)
+      * [Open Asset Import Library](mdroot/Vulkan 进阶/使用第三方库加载模型/Open Asset Import Library.md)
   * [Vulkan in Action：CPU 粒子系统](mdroot/Vulkan 进阶/Vulkan in Action：CPU 粒子系统.md)
     * [粒子](mdroot/Vulkan 进阶/Vulkan in Action：CPU 粒子系统/粒子.md)
     
     * [粒子发射器](mdroot/Vulkan 进阶/Vulkan in Action：CPU 粒子系统/粒子发射器.md)
-    * [Vulkan in Action：简单场景绘制](mdroot/Vulkan 进阶/Vulkan in Action：简单场景绘制.md)
-    
-    * [渲染资源](mdroot/Vulkan 进阶/Vulkan in Action：简单场景绘制/渲染资源.md)
-    
-    * [渲染流程](mdroot/Vulkan 进阶/Vulkan in Action：简单场景绘制/渲染流程.md)
-    
-    * [总结](mdroot/Vulkan 进阶/Vulkan in Action：简单场景绘制/总结.md)
+  * [Vulkan in Action：简单场景绘制](mdroot/Vulkan 进阶/Vulkan in Action：简单场景绘制.md)
+      * [渲染资源](mdroot/Vulkan 进阶/Vulkan in Action：简单场景绘制/渲染资源.md)
+      * [渲染流程](mdroot/Vulkan 进阶/Vulkan in Action：简单场景绘制/渲染流程.md)
+  
+      * [总结](mdroot/Vulkan 进阶/Vulkan in Action：简单场景绘制/总结.md)
   * [次级指令缓冲和多线程录制](mdroot/Vulkan 进阶/次级指令缓冲和多线程录制.md)
-    
     * [次级指令缓冲](mdroot/Vulkan 进阶/次级指令缓冲和多线程录制/次级指令缓冲.md)
     
     * [多线程指令缓冲录制](mdroot/Vulkan 进阶/次级指令缓冲和多线程录制/多线程指令缓冲录制.md)
-    * [间接绘制](mdroot/Vulkan 进阶/间接绘制.md)
-  
-      * [离线准备绘制命令](mdroot/Vulkan 进阶/间接绘制/离线准备绘制命令.md)
-  
-      * [渲染](mdroot/Vulkan 进阶/间接绘制/渲染.md)
+  * [间接绘制](mdroot/Vulkan 进阶/间接绘制.md)
+  * [离线准备绘制命令](mdroot/Vulkan 进阶/间接绘制/离线准备绘制命令.md)
+    
+  * [渲染](mdroot/Vulkan 进阶/间接绘制/渲染.md)
   * [查询](mdroot/Vulkan 进阶/查询.md)
     
     * [查询流程](mdroot/Vulkan 进阶/查询/查询流程.md)
@@ -204,11 +198,11 @@
       
       * [基于物理的着色](mdroot/绘制进阶/光照/基于物理的着色.md)
       
-      * [后处理特效](mdroot/绘制进阶/后处理特效.md)
-    * [全屏幕多边形](mdroot/绘制进阶/后处理特效/全屏幕多边形.md)
-      
-    * [后处理特效汇总](mdroot/绘制进阶/后处理特效/后处理特效汇总.md)
-      
+    * [后处理特效](mdroot/绘制进阶/后处理特效.md)
+      * [全屏幕多边形](mdroot/绘制进阶/后处理特效/全屏幕多边形.md)
+        
+      * [后处理特效汇总](mdroot/绘制进阶/后处理特效/后处理特效汇总.md)
+    
     * [HDR](mdroot/绘制进阶/HDR.md)
       
       * [HDR 简介](mdroot/绘制进阶/HDR/HDR 简介.md)
