@@ -1,111 +1,105 @@
 * [引用](mdroot/引用.md)
-    * [笔记主要参考来源](mdroot/引用/笔记主要参考来源.md)
-      
-    * [参考资料](mdroot/引用/参考资料.md)
-
+  
 * [Vulkan 命名和使用规范](mdroot/Vulkan 命名和使用规范.md)
 
 * [Vulkan 基础](mdroot/Vulkan 基础.md)
+    * [准备流程](mdroot/Vulkan 基础/准备流程.md)
+      * [使用 GFLW 创建窗口](mdroot/Vulkan 基础/准备流程/使用 GFLW 创建窗口.md)
+      
+      * [初始化 Vulkan 实例](mdroot/Vulkan 基础/准备流程/初始化 Vulkan 实例.md)
+      
+      * [验证层](mdroot/Vulkan 基础/准备流程/验证层.md)
+      * [借助 GFLW 创建 Surface](mdroot/Vulkan 基础/准备流程/借助 GFLW 创建 Surface.md)
+      
+      * [指定物理设备](mdroot/Vulkan 基础/准备流程/指定物理设备.md)
+      
+      * [抽象逻辑设备](mdroot/Vulkan 基础/准备流程/抽象逻辑设备.md)
+      
+      * [Swap Chain](mdroot/Vulkan 基础/准备流程/Swap Chain.md)
+      
+      * [创建 Image View](mdroot/Vulkan 基础/准备流程/创建 Image View.md)
+      
+      * [Render Pass](mdroot/Vulkan 基础/准备流程/Render Pass.md)
+      
+      * [图形流水线](mdroot/Vulkan 基础/准备流程/图形流水线.md)
+      
+      * [帧缓冲](mdroot/Vulkan 基础/准备流程/帧缓冲.md)
+      
+      * [指令缓冲](mdroot/Vulkan 基础/准备流程/指令缓冲.md)
+      
+      * [渲染流程](mdroot/Vulkan 基础/准备流程/渲染流程.md)
+      
+      * [重建 Swap Chain](mdroot/Vulkan 基础/准备流程/重建 Swap Chain.md)
+      
+      * [后记](mdroot/Vulkan 基础/准备流程/后记.md)
+      
+    * [绘制几何体](mdroot/Vulkan 基础/绘制几何体.md)
 
-  * [准备流程](mdroot/Vulkan 基础/准备流程.md)
+      * [顶点](mdroot/Vulkan 基础/绘制几何体/顶点.md)
 
-    * [工程准备](mdroot/Vulkan 基础/准备流程/工程准备.md)
+      * [顶点缓冲](mdroot/Vulkan 基础/绘制几何体/顶点缓冲.md)
 
-    * [初始化 Vulkan 实例](mdroot/Vulkan 基础/准备流程/初始化 Vulkan 实例.md)
+      * [Staging Buffer](mdroot/Vulkan 基础/绘制几何体/Staging Buffer.md)
 
-    * [验证层](mdroot/Vulkan 基础/准备流程/验证层.md)
+      * [索引缓冲](mdroot/Vulkan 基础/绘制几何体/索引缓冲.md)
 
-    * [借助 GFLW 创建 Surface](mdroot/Vulkan 基础/准备流程/借助 GFLW 创建 Surface.md)
+      * [自定义缓冲内存分配器](mdroot/Vulkan 基础/绘制几何体/自定义缓冲内存分配器.md)
 
-    * [指定物理设备](mdroot/Vulkan 基础/准备流程/指定物理设备.md)
+    * [资源描述与 Uniform 缓冲](mdroot/Vulkan 基础/资源描述与 Uniform 缓冲.md)
 
-    * [抽象逻辑设备](mdroot/Vulkan 基础/准备流程/抽象逻辑设备.md)
+      * [资源描述](mdroot/Vulkan 基础/资源描述与 Uniform 缓冲/资源描述.md)
 
-    * [Swap Chain](mdroot/Vulkan 基础/准备流程/Swap Chain.md)
+      * [UBO](mdroot/Vulkan 基础/资源描述与 Uniform 缓冲/UBO.md)
 
-    * [创建 Image View](mdroot/Vulkan 基础/准备流程/创建 Image View.md)
+    * [图像纹理](mdroot/Vulkan 基础/图像纹理.md)
 
-    * [Render Pass](mdroot/Vulkan 基础/准备流程/Render Pass.md)
+      * [流程](mdroot/Vulkan 基础/图像纹理/流程.md)
 
-    * [图形流水线](mdroot/Vulkan 基础/准备流程/图形流水线.md)
+      * [从外部加载图像](mdroot/Vulkan 基础/图像纹理/从外部加载图像.md)
 
-    * [帧缓冲](mdroot/Vulkan 基础/准备流程/帧缓冲.md)
+      * [创建图像对象](mdroot/Vulkan 基础/图像纹理/创建图像对象.md)
 
-    * [指令缓冲](mdroot/Vulkan 基础/准备流程/指令缓冲.md)
+      * [图像视图](mdroot/Vulkan 基础/图像纹理/图像视图.md)
 
-    * [渲染流程](mdroot/Vulkan 基础/准备流程/渲染流程.md)
+      * [采样器](mdroot/Vulkan 基础/图像纹理/采样器.md)
 
-    * [重建 Swap Chain](mdroot/Vulkan 基础/准备流程/重建 Swap Chain.md)
+      * [组合图像采样器](mdroot/Vulkan 基础/图像纹理/组合图像采样器.md)
 
-    * [后记](mdroot/Vulkan 基础/准备流程/后记.md)
+      * [纹理坐标](mdroot/Vulkan 基础/图像纹理/纹理坐标.md)
 
-  * [绘制几何体](mdroot/Vulkan 基础/绘制几何体.md)
+    * [深度缓冲](mdroot/Vulkan 基础/深度缓冲.md)
 
-    * [顶点](mdroot/Vulkan 基础/绘制几何体/顶点.md)
+      * [介绍](mdroot/Vulkan 基础/深度缓冲/介绍.md)
 
-    * [顶点缓冲](mdroot/Vulkan 基础/绘制几何体/顶点缓冲.md)
+      * [深度缓冲图像](mdroot/Vulkan 基础/深度缓冲/深度缓冲图像.md)
 
-    * [Staging Buffer](mdroot/Vulkan 基础/绘制几何体/Staging Buffer.md)
+      * [修改 Render Pass](mdroot/Vulkan 基础/深度缓冲/修改 Render Pass.md)
 
-    * [索引缓冲](mdroot/Vulkan 基础/绘制几何体/索引缓冲.md)
+      * [帧缓冲](mdroot/Vulkan 基础/深度缓冲/帧缓冲.md)
 
-    * [自定义缓冲内存分配器](mdroot/Vulkan 基础/绘制几何体/自定义缓冲内存分配器.md)
+      * [修改流水线](mdroot/Vulkan 基础/深度缓冲/修改流水线.md)
 
-  * [资源描述与 Uniform 缓冲](mdroot/Vulkan 基础/资源描述与 Uniform 缓冲.md)
+    * [Mipmaps](mdroot/Vulkan 基础/Mipmaps.md)
 
-    * [资源描述](mdroot/Vulkan 基础/资源描述与 Uniform 缓冲/资源描述.md)
+      * [简介](mdroot/Vulkan 基础/Mipmaps/简介.md)
 
-    * [UBO](mdroot/Vulkan 基础/资源描述与 Uniform 缓冲/UBO.md)
+      * [创建 image](mdroot/Vulkan 基础/Mipmaps/创建 image.md)
 
-  * [图像纹理](mdroot/Vulkan 基础/图像纹理.md)
+      * [配置 mipmaps](mdroot/Vulkan 基础/Mipmaps/配置 mipmaps.md)
 
-    * [流程](mdroot/Vulkan 基础/图像纹理/流程.md)
+    * [多重采样](mdroot/Vulkan 基础/多重采样.md)
 
-    * [从外部加载图像](mdroot/Vulkan 基础/图像纹理/从外部加载图像.md)
+      * [简介](mdroot/Vulkan 基础/多重采样/简介.md)
 
-    * [创建图像对象](mdroot/Vulkan 基础/图像纹理/创建图像对象.md)
+      * [查询兼容性](mdroot/Vulkan 基础/多重采样/查询兼容性.md)
 
-    * [图像视图](mdroot/Vulkan 基础/图像纹理/图像视图.md)
+      * [离线渲染 Render Target](mdroot/Vulkan 基础/多重采样/离线渲染 Render Target.md)
 
-    * [采样器](mdroot/Vulkan 基础/图像纹理/采样器.md)
+      * [修改流程](mdroot/Vulkan 基础/多重采样/修改流程.md)
 
-    * [组合图像采样器](mdroot/Vulkan 基础/图像纹理/组合图像采样器.md)
+      * [附加：Sample Shading](mdroot/Vulkan 基础/多重采样/附加：Sample Shading.md)
 
-    * [纹理坐标](mdroot/Vulkan 基础/图像纹理/纹理坐标.md)
-
-  * [深度缓冲](mdroot/Vulkan 基础/深度缓冲.md)
-
-    * [介绍](mdroot/Vulkan 基础/深度缓冲/介绍.md)
-
-    * [深度缓冲图像](mdroot/Vulkan 基础/深度缓冲/深度缓冲图像.md)
-
-    * [修改 Render Pass](mdroot/Vulkan 基础/深度缓冲/修改 Render Pass.md)
-
-    * [帧缓冲](mdroot/Vulkan 基础/深度缓冲/帧缓冲.md)
-
-    * [修改流水线](mdroot/Vulkan 基础/深度缓冲/修改流水线.md)
-
-  * [Mipmaps](mdroot/Vulkan 基础/Mipmaps.md)
-
-    * [简介](mdroot/Vulkan 基础/Mipmaps/简介.md)
-
-    * [创建 image](mdroot/Vulkan 基础/Mipmaps/创建 image.md)
-
-    * [配置 mipmaps](mdroot/Vulkan 基础/Mipmaps/配置 mipmaps.md)
-
-  * [多重采样](mdroot/Vulkan 基础/多重采样.md)
-
-    * [简介](mdroot/Vulkan 基础/多重采样/简介.md)
-
-    * [查询兼容性](mdroot/Vulkan 基础/多重采样/查询兼容性.md)
-
-    * [离线渲染 Render Target](mdroot/Vulkan 基础/多重采样/离线渲染 Render Target.md)
-
-    * [修改流程](mdroot/Vulkan 基础/多重采样/修改流程.md)
-
-    * [附加：Sample Shading](mdroot/Vulkan 基础/多重采样/附加：Sample Shading.md)
-
-  * [后记](mdroot/Vulkan 基础/后记.md)
+    * [后记](mdroot/Vulkan 基础/后记.md)
 
 * [Vulkan 进阶](mdroot/Vulkan 进阶.md)
 
