@@ -21,14 +21,14 @@
   appInfo.apiVersion = VK_API_VERSION_1_0;
   ```
 
-* 
+* 由于这里的项目需要 Vulkan 标准里可能不需要的扩展（Extensions），这些功能可能在图形驱动/硬件中实现，也可能不实现，所以需要实现咨询好。同样需要咨询的还有验证层（Validation Layer）。扩展和验证层的概念在下面有记录。
 * 创建`VkInstanceCreateInfo createInfo`，其中包括：
   * 上述 `appInfo` 结构体
   * 全局 extensions（GLFW提供窗口的extension `glfwGetRequiredInstanceExtensions()`）
   * ValidationLayers
 
-创建Instance
-`VkResult result = vkCreateInstance(&createInfo, nullptr, &instance);`
+* 创建Instance
+  `VkResult result = vkCreateInstance(&createInfo, nullptr, &instance);`
 
 用完别忘删，在`cleanUp()`中
 `vkDestroyInstance(instance, nullptr);`
