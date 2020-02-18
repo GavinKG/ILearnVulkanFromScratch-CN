@@ -2,15 +2,17 @@
 
 ### 用途
 
-由于硬件限制，很多时候提供一片同时能被GPU和CPU读写的内存（both device local and host visible）不是一件容易的事情，这尤其体现在与独立显卡的交互过程中：CPU不得不在背后将所有数据从PCI-E总线发到GPU端，这比起直接访问内存要慢很多。
+由于硬件限制，很多时候提供一片同时能被 GPU 和 CPU 读写的内存（both device local and host visible）不是一件容易的事情，这尤其体现在与独立显卡的交互过程中：CPU 不得不在背后将所有数据从 PCI-E 总线发到 GPU 端，这比起直接访问显卡设备的 VRAM 要慢很多。
 
-为了优化这一点，我们开辟一块和原始顶点内容相等的临时缓冲，将其内存设为共享（和旧式顶点缓冲一样），成为staging buffer。在应用了暂存缓冲后，顶点缓冲则可以成为一个使用GPU独占显存的缓冲区，GPU对其的读取速度要比从共享内存快。相比于每次在render loop的绘制过程都从旧式顶点缓冲的慢速内存中读取顶点数据，我们只在程序一开始通过命令队列进行一次转移（transfer）操作从暂存缓冲移动到高速的顶点缓冲，之后每个render loop显卡将都从高速顶点缓冲中取数据进行绘制，省时省力。
+为了优化这一点，我们开辟一块和原始顶点内容相等的临时缓冲，将其内存设为共享（和旧式顶点缓冲一样），成为 staging buffer。在应用了暂存缓冲后，顶点缓冲则可以成为一个使用 GPU 独占显存的缓冲区，GPU对其的读取速度要比从共享内存快。相比于每次在render loop的绘制过程都从旧式顶点缓冲的慢速内存中读取顶点数据，我们只在程序一开始通过命令队列进行一次转移（transfer）操作从暂存缓冲移动到高速的顶点缓冲，之后每个render loop显卡将都从高速顶点缓冲中取数据进行绘制，在顶点数据不需要改变的情况下（比如场景中的大部分物体）增加效率。
 
-但需要注意的是，如果CPU-GPU带宽是瓶颈，可以选择采用staging buffer，但如果顶点数据经常变动（注意是本质上的变动，例如增加减少，坐标的变动可以通过变换矩阵或几何着色器解决）或只面对集成显卡、游戏主机、移动设备（SoC）等图形设备和图形内存（往往与CPU共享）的程序采取staging buffer + transfer queue则更可能是一种冗余的操作。所以说这一章节的内容需要斟酌考虑是否实现在项目中。
+但需要注意的是，如果CPU-GPU带宽是瓶颈，可以选择采用 staging buffer，但如果顶点数据经常变动（注意是本质上的变动，例如增加减少，坐标的变动可以通过变换矩阵或几何着色器解决）或只面对集成显卡、游戏主机、移动设备（SoC）等图形设备和图形内存（往往与CPU共享）的程序采取 staging buffer + transfer 则更可能是一种冗余的操作。所以说这一章节的内容需要斟酌考虑是否实现在项目中。
+
+附：VMA 库并没有 Staging Buffer 的概念，所以即使使用 VMA 也需要手动进行 Transfer。同时，VMA 库有一种能够识别 VRAM 是否也能 host visible 的方法，详见doc。
 
 ### 转移队列
 
-为了实现从暂存缓冲（源，src）将顶点转移到高速顶点缓冲（目标，dst）中，这里需要使用到 transfer queue，也就是支持`VK_QUEUE_TRANSFER_BIT`的queue family。不过很巧的是，所有图像（Graphics）队列都支持转移操作，所以这里直接将转移命令提交到图像（Graphics）队列就好。当然，如果需要绘制的内容时常全部更改，转移操作很频繁，可以考虑专门新建一个transfer queue，这样Vulkan能够更好的安排队列的并行执行，从而优化程序性能。
+为了实现从暂存缓冲（源，src）将顶点转移到高速顶点缓冲（目标，dst）中，这里需要使用到 transfer queue，也就是支持 `VK_QUEUE_TRANSFER_BIT` 的queue family。不过很巧的是，所有图像（Graphics）队列都支持转移操作，所以这里直接将转移命令提交到图像（Graphics）队列就好。当然，如果需要绘制的内容时常全部更改，转移操作很频繁，可以考虑专门新建一个 transfer queue，这样 Vulkan **可能**能够更好的安排队列的并行执行，从而优化程序性能。
 
 ### 使用暂存缓冲
 
@@ -31,5 +33,47 @@
 - 提交 command buffer：`vkQueueSubmit。`
 - 使用`vkQueueWaitIdle`阻塞等待队列执行完毕。
 - 使用`vkFreeCommandBuffers`释放掉这个短命的command buffer。
+
+详细代码（直接摘自教程）：
+
+```cpp
+void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
+    
+    // also need device, commandPool, graphicsQueue
+    
+    VkCommandBufferAllocateInfo allocInfo = {};
+    allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    allocInfo.commandPool = commandPool;
+    allocInfo.commandBufferCount = 1;
+
+    VkCommandBuffer commandBuffer;
+    vkAllocateCommandBuffers(device, &allocInfo, &commandBuffer);
+
+    VkCommandBufferBeginInfo beginInfo = {};
+    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+    vkBeginCommandBuffer(commandBuffer, &beginInfo);
+
+    VkBufferCopy copyRegion = {};
+    copyRegion.size = size;
+    vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
+
+    vkEndCommandBuffer(commandBuffer);
+
+    VkSubmitInfo submitInfo = {};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &commandBuffer;
+
+    vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
+    vkQueueWaitIdle(graphicsQueue);
+
+    vkFreeCommandBuffers(device, commandPool, 1, &commandBuffer);
+}
+```
+
+
 
 对拷结束之后，在本例中暂存缓冲的用处也就没有了。使用 `vkDestroyBuffer` 和 `vkFreeMemory` 释放掉这个同样短命的 staging buffer。
