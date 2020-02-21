@@ -39,7 +39,7 @@ Attachments 即 Render Target，之后直接使用 Vulkan 的叫法了。Attachm
   注意：`srcSubpass`值必须低于`dstSubpass`，否则subpass的依赖图便存在环了
 - `dstStageMask`和`dstAccessMask`：告诉subpass在`dstAccessMask`的access操作到来的时候需要等待的`dstStageMask`阶段。这里我们需要在`VK_ACCESS_COLOR_ATTACHMENT_READ_BIT `和（按位或）`VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT`（读写颜色Image）时等待颜色输出阶段，即上述提到的`VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT`
 
-怎样玩转 Subpass 来增加性能将会在 **Vulkan 进阶** 一章中提到。
+怎样玩转 Subpass 来增加性能将会在 **Vulkan 进阶** 一章中提到。这里因为就需要一个 subpass 所以直接走流程了。
 
 ### 创建 Render Pass
 
