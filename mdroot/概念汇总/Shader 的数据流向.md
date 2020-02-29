@@ -1,5 +1,7 @@
 # Shader 的数据流向
 
+https://www.khronos.org/opengl/wiki/Layout_Qualifier_(GLSL)
+
 ## `Location`
 
 * **在 Vertex Shader 中：**
