@@ -164,9 +164,9 @@
     
     * [多线程指令缓冲录制](mdroot/Vulkan 进阶/次级指令缓冲和多线程录制/多线程指令缓冲录制.md)
   * [间接绘制](mdroot/Vulkan 进阶/间接绘制.md)
-  * [离线准备绘制命令](mdroot/Vulkan 进阶/间接绘制/离线准备绘制命令.md)
-    
-  * [渲染](mdroot/Vulkan 进阶/间接绘制/渲染.md)
+      * [离线准备绘制命令](mdroot/Vulkan 进阶/间接绘制/离线准备绘制命令.md)
+        
+      * [渲染](mdroot/Vulkan 进阶/间接绘制/渲染.md)
   * [查询](mdroot/Vulkan 进阶/查询.md)
     
     * [查询流程](mdroot/Vulkan 进阶/查询/查询流程.md)
@@ -184,10 +184,11 @@
 * [绘制进阶](mdroot/绘制进阶.md)
     * [光照](mdroot/绘制进阶/光照.md)
       * [拟真光照模型](mdroot/绘制进阶/光照/拟真光照模型.md)
-      
       * [光照纹理](mdroot/绘制进阶/光照/光照纹理.md)
-      
       * [基于物理的着色](mdroot/绘制进阶/光照/基于物理的着色.md)
+        * [PBR 通俗理解](mdroot/绘制进阶/光照/基于物理的着色/PBR 通俗理解.md)
+        * [IBL](mdroot/绘制进阶/光照/基于物理的着色/IBL.md)
+        * [实现](mdroot/绘制进阶/光照/基于物理的着色/实现.md)
       
     * [后处理特效](mdroot/绘制进阶/后处理特效.md)
       * [全屏幕多边形](mdroot/绘制进阶/后处理特效/全屏幕多边形.md)
@@ -210,8 +211,8 @@
       
       * [级联阴影映射](mdroot/绘制进阶/阴影/级联阴影映射.md)
       
-    * [骨骼动画](mdroot/绘制进阶/骨骼动画.md)
-
+* [骨骼动画](mdroot/绘制进阶/骨骼动画.md)
+    
 * [概念汇总](mdroot/概念汇总.md)
 
   * [设备与逻辑设备 Physical / Logical Device](mdroot/概念汇总/设备与逻辑设备.md)
