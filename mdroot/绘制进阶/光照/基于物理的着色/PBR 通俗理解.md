@@ -6,9 +6,9 @@
 
 $L_o(p,\omega_o) = \int\limits_{\Omega} f_r(p,\omega_i,\omega_o) L_i(p,\omega_i) n \cdot \omega_i  d\omega_i$
 
-通俗理解：从p点向wo方向角（观察角度）出射的光 = BRDF(p点，输入方向角wi，输出方向角wo) * 入射光(p点、输入方向角wi) * 表面辐射（即dot(n, wi)），其中wi在整个半球面上(omega)积分。
+通俗理解：从p点向wo方向角（观察角度/立体角）出射的光 = 反射系数公式BRDF(p点，输入方向角wi，输出方向角wo) * 入射光单位面积光通量(p点、输入方向角wi) * 表面辐射（即dot(n, wi)），其中wi在整个半球面上(omega)积分。
 
-在局部照明（Local Illumination）中，对于每一个出射光方向角（即一个像素的footprint），输入的光线就一个，也就是场景中的光源（多光源的话就累加）。
+（有些地方积分域会用 H 符号代替，真正代表半球）
 
 ## BRDF
 
@@ -31,7 +31,7 @@ $L_o(p,\omega_o) = \int\limits_{\Omega} f_r(p,\omega_i,\omega_o) L_i(p,\omega_i)
 
     $f_{lambert} = \frac{c}{\pi}$
 
-    c 代表漫反射光diffuse，或者称为albedo。pi是对半球表面的积分。需要注意，因为BRDF不考虑光源方向辐照度->表面接收到的辐照度（即dot(n, l)），所以Lambert部分就是一个常量，结合上公式外面那个点乘不就是完整的Lambert光照么，这也就是为什么管它叫lambert的原因。这里除以pi的原因其实也是因为对于每个像素来说，它不可能分到整个的入射光照，所以除以pi算出它分得的光照，也就是微分。
+    c 代表漫反射光diffuse，或者称为albedo，或者记为$c_{diff}$或$c_{surf}$。需要注意，因为BRDF不考虑光源方向辐照度->表面接收到的辐照度（即`dot(n, l)`），所以Lambert部分就是一个常量，结合上公式外面那个点乘不就是完整的Lambert光照么，这也就是为什么管它叫lambert的原因。
 
   * "Cook Torrance"部分：
 
@@ -53,7 +53,7 @@ $f_{cook-torrance} = \frac{DFG}{4(\omega_o \cdot n)(\omega_i \cdot n)}$
   
   NDF不难理解：当我们的视线正好和反射光线相同（即半程向量正好为法线），且平面完全光滑时，反射光线不就都射眼睛里了么，产生大片亮斑；反之则啥也看不见（类似于图1）。但是因为有roughness的微平面属性存在，半程向量不为法线时，其实也能看见光！这种关系的描述就是NDF。
   
-  这个公式有一个很响亮的名字：Trowbridge-Reitz GGX（GGXTR）！NDF在这里可能是最能够直接感受到光照效果的part了。
+  这个公式有一个很响亮的名字：GGX/Trowbridge-Reitz（GGXTR）！NDF在这里可能是最能够直接感受到光照效果的 part 了。
   
   ![](https://learnopengl.com/img/pbr/ndf.png)
   
@@ -105,9 +105,9 @@ $f_{cook-torrance} = \frac{DFG}{4(\omega_o \cdot n)(\omega_i \cdot n)}$
   * 金属：0.5~1.0，并且对于每个波长的可见光来说F0值都不一样。
   * 电介质：平均值在0.04左右。对于每个波长的可见光来说F0值都差不多。
   
-  具体反射的物理学知识可以参考[Wikipedia](https://zh.wikipedia.org/wiki/%E5%8F%8D%E5%B0%84_(%E7%89%A9%E7%90%86%E5%AD%A6))
+  具体反射的物理学知识可以参考[Wikipedia](https://zh.wikipedia.org/wiki/%E5%8F%8D%E5%B0%84_(%E7%89%A9%E7%90%86%E5%AD%A6))。当然F0也可以直接由折光率（refractive index）来算出来，但是因为写代码也用不上，这里忽略。
   
-  公式运算完毕的值其实就是之前提到的高光部分占整个输出光能量的比值ks。于是kd也可以随机用1-ks（即1-F）算出来。
+  公式运算完毕的值 F 其实就是之前提到的**高光部分占整个输出光能量的比值** ks。于是kd也可以随机用  1-ks（即 1-F ）算出来。
 
 ## 如何让美工也知道F0是什么玩意儿
 
@@ -135,3 +135,20 @@ kd *= 1.0 - metallic;
 * metalness / metallic：取值范围 [0, 1]，同样也可以是纹理。
 * roughness：取值范围 [0, 1]，决定着微平面属性，同样也可以是纹理。
 
+
+
+## 后记
+
+这里只是大概介绍了一下这个渲染方程大致的结构和每个结构的用处，并没有具体进行数学推导。下面有几个推导的链接：
+
+https://zhuanlan.zhihu.com/p/21489591
+
+https://www.cnblogs.com/TracePlus/p/4141833.html
+
+Epic Games 在 SIGGRAPH 上的ppt
+
+https://cdn2-unrealengine-1251447533.file.myqcloud.com/Resources/files/2013SiggraphPresentationsNotes-26915738.pdf
+
+LearnOpenGL 的代码在这个链接中：
+
+https://learnopengl.com/PBR/Lighting
