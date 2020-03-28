@@ -4,7 +4,7 @@
 
 如上所述，资源描述分为很多种，由于这里要实现三维的变换，需要传入 MVP 矩阵，所以我们需要一种特定的资源描述，叫 Uniform Buffer Object。其对应Shader 中的 uniform 常量。之所以称之为 Uniform，正是因为这些数据（在没有显式被客户端改变时）在所有使用这些数据的 Shader 实例中都不会改变。
 
-在 C++ 客户端中，一个我们需要的 UBO 结构体如下所示。注意：glm 代数库中的 `glm::mat4` 类可直接对应上 shader 中 `mat4` 类型，即这两个类型二进制兼容，同时这个结构体满足标准布局，所以在复制到 buffer 时可以直接用 `memcpy` 函数。
+在 C++ 客户端中，一个我们需要的 UBO 结构体如下所示。注意：glm 代数库中的 `glm::mat4` 类可直接对应上 shader 中 `mat4` 类型，即这两个类型二进制兼容，同时这个结构体满足一样的布局，所以在复制到 buffer 时可以直接用 `memcpy` 函数。
 
 ```c++
 struct UniformBufferObject {
@@ -32,7 +32,9 @@ void main() {
 }
 ```
 
-具体原理请见图形学坐标变换矩阵和齐次坐标的介绍。
+需要注意，在 OpenGL 时代，可以不用 struct，而直接裸用变量（`uniform mat4 proj`），但是在 Vulkan 和 SPIR-V 中必须将 uniform 组合成上面的 “Uniform Block” 结构体。
+
+
 
 ### 创建 Uniform Buffer
 
@@ -112,3 +114,6 @@ struct UniformBufferObject {
 
 GLM 在设计的时候也考虑到了这一点。在 include 之前定义 `GLM_FORCE_DEFAULT_ALIGNED_GENTYPES` 宏来强制 GLM 帮我们进行数据的 16-byte 对齐。但当在遇到嵌套结构体时（Shader也可以对应的用结构体哦）还是需要手动对齐数据。
 
+std140 的对其规范可以从 OpenGL Programming Guide 中找到（图摘自 OReally 官网）：
+
+![](https://www.oreilly.com/library/view/opengl-programming-guide/9780132748445/graphics/app09tab01.jpg)

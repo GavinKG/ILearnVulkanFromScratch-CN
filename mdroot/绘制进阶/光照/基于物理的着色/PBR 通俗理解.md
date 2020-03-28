@@ -4,7 +4,7 @@
 
 完整的渲染方程：
 
-$L_o(p,\omega_o) = \int\limits_{\Omega} f_r(p,\omega_i,\omega_o) L_i(p,\omega_i) n \cdot \omega_i  d\omega_i$
+$$L_o(p,\omega_o) = \int\limits_{\Omega} f_r(p,\omega_i,\omega_o) L_i(p,\omega_i) n \cdot \omega_i  d\omega_i$$
 
 通俗理解：从p点向wo方向角（观察角度/立体角）出射的光 = 反射系数公式BRDF(p点，输入方向角wi，输出方向角wo) * 入射光单位面积光通量(p点、输入方向角wi) * 表面辐射（即dot(n, wi)），其中wi在整个半球面上(omega)积分。
 
@@ -25,13 +25,13 @@ $L_o(p,\omega_o) = \int\limits_{\Omega} f_r(p,\omega_i,\omega_o) L_i(p,\omega_i)
 
 * Cook-Torrance BRDF
 
-  $f_r = k_d f_{lambert} +  f_{cook-torrance}$
+  $$f_r = k_d f_{lambert} +  f_{cook-torrance}$$
 
   * "lambert"部分：这一部分描述所有漫反射的光，而且用的是lambert model。计算非常简单：
 
-    $f_{lambert} = \frac{c}{\pi}$
+    $$f_{lambert} = \frac{c}{\pi}$$
 
-    c 代表漫反射光diffuse，或者称为albedo，或者记为$c_{diff}$或$c_{surf}$。需要注意，因为BRDF不考虑光源方向辐照度->表面接收到的辐照度（即`dot(n, l)`），所以Lambert部分就是一个常量，结合上公式外面那个点乘不就是完整的Lambert光照么，这也就是为什么管它叫lambert的原因。
+    c 代表漫反射光diffuse，或者称为albedo，或者记为$$c_{diff}$$或$$c_{surf}$$。需要注意，因为BRDF不考虑光源方向辐照度->表面接收到的辐照度（即`dot(n, l)`），所以Lambert部分就是一个常量，结合上公式外面那个点乘不就是完整的Lambert光照么，这也就是为什么管它叫lambert的原因。
 
   * "Cook Torrance"部分：
 
@@ -41,13 +41,13 @@ $L_o(p,\omega_o) = \int\limits_{\Omega} f_r(p,\omega_i,\omega_o) L_i(p,\omega_i)
 
 ## Cook Torrance specular BRDF part
 
-$f_{cook-torrance} = \frac{DFG}{4(\omega_o \cdot n)(\omega_i \cdot n)}$
+$$f_{cook-torrance} = \frac{DFG}{4(\omega_o \cdot n)(\omega_i \cdot n)}$$
 
 三大头D、F、G从三大不同角度描述了到底怎么个基于物理，分开来说每一块可能有以下实现方法（实现方法并不唯一）：
 
 * D (Normal Distribution Funcion - NDF)
 
-  $NDF_{GGX TR}(n, h, \alpha) = \frac{\alpha^2}{\pi((n \cdot h)^2 (\alpha^2 - 1) + 1)^2}$
+  $$NDF_{GGX TR}(n, h, \alpha) = \frac{\alpha^2}{\pi((n \cdot h)^2 (\alpha^2 - 1) + 1)^2}$$
 
   这个公式估算了微平面和半程向量 $h$ 的对齐程度，从而能够反映出材质的**粗糙程度**。n不用说，就是法向量。h就是半程向量，即 normalize(l+v)。这里alpha即是roughness，也正是因为有roughness一说，NDF的存在才有意义。
   
@@ -59,7 +59,7 @@ $f_{cook-torrance} = \frac{DFG}{4(\omega_o \cdot n)(\omega_i \cdot n)}$
   
 * G (Geometry Function)
 
-  $G_{SchlickGGX}(n, v, k)        		 =    		\frac{n \cdot v}    	{(n \cdot v)(1 - k) + k }$
+  $$G_{SchlickGGX}(n, v, k)        		 =    		\frac{n \cdot v}    	{(n \cdot v)(1 - k) + k }$$
 
   当表面足够粗糙时，表面本身隆起来的小疙瘩可能会遮挡住旁边的表面接受光照，导致如果视线足够与法向量平行时，可能很多视线处于小疙瘩的背阴处，从而不接受光照，就像图里这样：
 
@@ -67,11 +67,11 @@ $f_{cook-torrance} = \frac{DFG}{4(\omega_o \cdot n)(\omega_i \cdot n)}$
 
   可见这个什么 Schlick GGX 公式就是处理这种情况使的。公式接受法线、观察方向和一个k，输出取值范围[0, 1]。k其实就是a的一种变形，本质上还是反应了roughness：
 
-  $k_{direct} = \frac{(\alpha + 1)^2}{8}$    $k_{IBL} = \frac{\alpha^2}{2}$
+  $$k_{direct} = \frac{(\alpha + 1)^2}{8}$$    $$k_{IBL} = \frac{\alpha^2}{2}$$
 
   一切看起来很美好，但是仔细想一下啊，视线可能因为被遮挡看不到被照到的部分（上图红色，Geometry Obstruction），光本身也会因为找不到某些地方产生阴影（Geometry Shadowing），所以上述公式的这个观察方向也要分类讨论为光线方向和视线方向，因此我们用下面这个公式 Smith's Schlick-GGX 统一上面的两种情况:
 
-  $G(n, v, l, k) = G_{SchlickGGX}(n, v, k) G_{SchlickGGX}(n, l, k)$
+  $$G(n, v, l, k) = G_{SchlickGGX}(n, v, k) G_{SchlickGGX}(n, l, k)$$
 
   这里v即视线，l即光线。该式子的取值范围为[0, 1]，效果如下（理论上NDF和GF的roughness都应该是一个，但是这里为了演示，固定了NDF的roughness）：
 
@@ -87,7 +87,7 @@ $f_{cook-torrance} = \frac{DFG}{4(\omega_o \cdot n)(\omega_i \cdot n)}$
 
   菲涅尔方程可以用下面这个 Fresnel-Schlick 公式来近似：
 
-  $F_{Schlick}(h, v, F_0) =     F_0 + (1 - F_0) ( 1 - (h \cdot v))^5$
+  $$F_{Schlick}(h, v, F_0) =     F_0 + (1 - F_0) ( 1 - (h \cdot v))^5$$
 
   其中h,v都熟悉，F0是个什么？F0被称为 Fresnel Reﬂectance Values，其大体上能描述**一个材质（考虑为平滑的完美平面）将照上去的整个光谱的光通过直接反射输出的光的能量比率**，即材质的**直接反射颜色**。问题来了：除了直接反射输出的光，还有怎么着输出的光？这里就要提到此表面散射的概念了（我觉得这里才是引入这个概念的时候，而不是在一开始）：
 
@@ -131,7 +131,7 @@ kd *= 1.0 - metallic;
 
 综上，对于一个材质面板来说，和 PBR 有关系的属性如下：
 
-* albedo：可以是纯色，可以是纹理，也可以是纹理*tint。当纯金属时该值直接成为F0。
+* albedo：可以是纯色，可以是纹理，也可以是纹理 tint。当纯金属时该值直接成为F0。
 * metalness / metallic：取值范围 [0, 1]，同样也可以是纹理。
 * roughness：取值范围 [0, 1]，决定着微平面属性，同样也可以是纹理。
 
