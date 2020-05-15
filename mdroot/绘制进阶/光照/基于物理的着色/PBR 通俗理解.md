@@ -109,7 +109,7 @@ $$f_{cook-torrance} = \frac{DFG}{4(\omega_o \cdot n)(\omega_i \cdot n)}$$
   
   公式运算完毕的值 F 其实就是之前提到的**高光部分占整个输出光能量的比值** ks。于是kd也可以随机用  1-ks（即 1-F ）算出来。
 
-## 如何让美工也知道F0是什么玩意儿
+## 如何让美术也知道F0是什么玩意儿
 
 其实到现在，之前一直提到的一个参数 metalness / matallic 一直没被用到，而被反复用到的一个参数叫F0。用过商业引擎的人也都知道，在引擎的PBR材质上也没有这个F0的参数。那么怎么从metalness转化为F0呢？
 
@@ -121,7 +121,7 @@ $$f_{cook-torrance} = \frac{DFG}{4(\omega_o \cdot n)(\omega_i \cdot n)}$$
 看来F0和kd的混合就可以做到让这套算法兼容两者：
 
 ```c
-F0 = mix(vec3(0.04), albedo, metallic); // linear interpolation "mix"
+F0 = mix(vec3(0.04), albedo, metallic); // linear interpolation "mix", or "lerp" in HLSL
 // ...
 kd = vec3(1.0) - F;
 kd *= 1.0 - metallic;
