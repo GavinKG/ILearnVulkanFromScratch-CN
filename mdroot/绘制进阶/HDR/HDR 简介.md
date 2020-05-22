@@ -1,4 +1,4 @@
-## HDR 简介
+## HDR 效果简介
 
 [https://learnopengl-cn.github.io/05%20Advanced%20Lighting/06%20HDR/](https://learnopengl-cn.github.io/05 Advanced Lighting/06 HDR/)，这里有HDR原理的介绍，此处不再赘述。
 
@@ -16,7 +16,7 @@ vec3 mapped = hdrColor / (hdrColor + vec3(1.0));
 
 ![img](https://pic3.zhimg.com/80/9031118d0581d546051b3c60e4ad2402_hd.png)
 
-当然还有很多其它方法，比如直接用指数函数模拟出的“S 曲线”算法（该案例中采用的方法，见本章最后）；下图所使用的 “Filmic tone mapping”，其为 Naughty Dog 在 Uncharted 2 中使用的 Tone Mapping 方法，出自 https://www.slideshare.net/ozlael/hable-john-uncharted2-hdr-lighting；还有业界公认的 ACES Toon Mapping，对 HDR10 显示设备兼容性好，在 UE4 等引擎和各大本世代游戏广泛应用，ACES Tone Mapping 的原理和实现可以参考这篇博客：<https://knarkowicz.wordpress.com/2016/01/06/aces-filmic-tone-mapping-curve/>。
+当然还有很多其它方法，比如直接用指数函数模拟出的“S 曲线”算法（该案例中采用的方法，见本章最后）；下图所使用的 “Filmic tone mapping”，其为 Naughty Dog 在 Uncharted 2 中使用的 Tone Mapping 方法，出自 https://www.slideshare.net/ozlael/hable-john-uncharted2-hdr-lighting ；还有业界公认的 ACES Toon Mapping，对 HDR10 显示设备兼容性好，在 UE4 等引擎和各大本世代游戏广泛应用，ACES Tone Mapping 的原理和实现可以参考这篇博客：<https://knarkowicz.wordpress.com/2016/01/06/aces-filmic-tone-mapping-curve/>。
 
 ![Comparison of tonemapping or not, from Uncharted 2](https://i.stack.imgur.com/uCvQb.jpg)
 
