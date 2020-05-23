@@ -60,7 +60,9 @@ for (size_t i = 0; i < swapChainImages.size(); i++) {
 
 一旦声明，这些 buffer 就可以不去动它了，直到渲染结束。在`cleanupSwapChain` 时通过使用`vkDestroyBuffer` 和 `vkFreeMemory` 来释放空间。这也意味着当 swap chain 改动时，也要重新建立这些 uniform buffer。
 
-在 draw loop 中，当获取到 swap chain image 时，立刻对该帧的 uniform buffer 进行更新。在本例中，我们让示例 quad 持续转动。
+在 draw loop 中，当获取到 swap chain image 时，立刻对该帧的 uniform buffer 进行更新即可，除了写缓冲之外同样不需要做任何工作。在本例中，我们让示例 quad 持续转动。
+
+
 
 ### 更新 Uniform Buffer
 
@@ -99,6 +101,8 @@ vkUnmapMemory(device, uniformBuffersMemory[currentImage]);
 
 注意，使用 UBO 来更改每帧都在变化的变换矩阵其实并不是一个最优方法。最好的方法是使用 `push_constants` 来将数据量小但变化频繁的 uniform 变量提交到shader中，例如本例的变换矩阵们。这里的“数据量小”概念可以通过查看实例中的 `VkPhysicalDeviceLimits::maxPushConstantSize` 成员变量值。Vulkan 要求最小值为 128 字节，而当前主流显卡一般也就有其两倍大（本机的 GTX 1070 和 UHD 630 均为256字节）。通过使用 push constants，向 Shader传递内容可以绕过复杂的 buffer 分配环节，**因为 push constants 其实就是流水线的一部分**。
 
+
+
 ### 数据对齐
 
 C++ 客户端的 UBO 布局要遵循 Vulkan 的对齐标准才能将有效的信息传递给 Shader，具体定义可以在 Vulkan 官网上查到，这里 GLM 已经帮我们进行二进制兼容了。同时，其数据起始地址要是 16 字节的倍数，所以要使用 `alignas(16)` 对齐，例如：
@@ -117,3 +121,29 @@ GLM 在设计的时候也考虑到了这一点。在 include 之前定义 `GLM_F
 std140 的对其规范可以从 OpenGL Programming Guide 中找到（图摘自 OReally 官网）：
 
 ![](https://www.oreilly.com/library/view/opengl-programming-guide/9780132748445/graphics/app09tab01.jpg)
+
+
+
+### 配额限制
+
+虽然本例使用的 UBO 算是相当轻量级的了，但正式工程中在使用 UBO 传数据之前也需要了解一下 UBO 在 Vulkan 规范和系统显卡上的空间/数量配额限制。常用的有下面几个：
+
+* `maxUniformBufferRange`
+
+  在将 UBO "write" 进资源描述时（见上一章），`VkDescriptorBufferInfo` 类型参数中 `range` 的最大值，说白了就是 UBO 最大大小。笔者机器上是 65536 字节。
+
+* `maxPerStageDescriptorUniformBuffers`
+
+  一个 Shader 阶段能 binding 多少个 UBO。笔者机器上是 15 个。
+
+* `maxDescriptorSetUniformBuffers`
+
+  一整个流水线能 binding 多少个 UBO。笔者机器上是 180 个。
+
+* `minUniformBufferOffsetAlignment`
+
+  在将 UBO "write" 进资源描述时，`VkDescriptorBufferInfo` 类型参数中 `offset` 的最小值，说白了就是写资源描述时 UBO 的最少偏移。笔者机器上是 256 字节（0x00000100）。
+
+细节请参阅 `VkPhysicalDeviceLimits` 的官方文档或者使用随 Vulkan SDK 自带的软件 Vulkan Configurator，当然也可以通过写个程序自己查这些，就是累点儿不是么。
+
+  
