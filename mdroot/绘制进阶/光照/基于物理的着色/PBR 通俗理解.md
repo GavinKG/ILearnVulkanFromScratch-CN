@@ -1,6 +1,6 @@
 # PBR 通俗理解
 
-【未完成】
+【未完成，未标记图像出处】
 
 首先看一下这个完整的渲染方程：
 
@@ -20,12 +20,12 @@ $$L_o(p,\omega_o) = \int\limits_{\Omega} f_r(p,\omega_i,\omega_o) L_i(p,\omega_i
 
 ![Bi-Directional Reflection Distribution Functions - Chuck Moidel](PBR 通俗理解.assets/image007.jpg)
 
-当前已经知道了材质可以被分为两大种：**金属和电介质**，所以我们可以不针对每一种想要数学建模的材质都定义一个独特的 BRDF，而是可以通过输入一些参数来特例化这两大种材质，这些参数就包括：
+当前已知材质可以被分为两大种：**金属和电介质**，所以我们可以不针对每一种想要数学建模的材质都定义一个独特的 BRDF，而是可以通过输入一些参数来特例化这两大种材质，这些参数就包括：
 
 * roughness：描述微平面粗糙程度
 * metalness / metallic：描述材质的金属“程度”。理论上一个材质要不然就是金属要不然就是电介质，但这里允许 [0, 1] 连续取值是因为这么处理可以模拟那种金属上有灰/划痕等小于一个像素的 footprint 的效果（这里footprint 的概念可以参考 real-time rendering 那本书）。
 
-有了这些额外的输入，一些牛逼人士就开始着手来建模一个通用的，描述最基础硬表面的 BRDF了：
+有了这些额外的输入，一些牛逼人士就开始着手来建模一个通用的，描述最基础硬表面的 BRDF 了：
 
 
 
@@ -38,6 +38,8 @@ $$f_r = k_d f_{lambert} +  f_{cook-torrance}$$
   $$f_{lambert} = \frac{c}{\pi}$$
 
   c 代表漫反射光 diffuse，或者称为 albedo，或者记为 $$c_{diff}$$ 或 $$c_{surf}$$。需要注意，因为在 BRDF 中不需要考虑光源方向辐照度/表面接收到的辐照度（即`dot(n, l)`），所以 Lambert 部分就是一个常量，结合上公式外面那个点乘（即`dot(n, l)`）不就是完整的 Lambert 光照么，这也就是为什么管它叫 Lambert 的原因。
+
+  // TODO：pi 和积分
 
 * "Cook Torrance" 部分：
 
@@ -99,7 +101,7 @@ $$f_{cook-torrance} = \frac{DFG}{4(\omega_o \cdot n)(\omega_i \cdot n)}$$
 
   $$F_{Schlick}(h, v, F_0) =     F_0 + (1 - F_0) ( 1 - (h \cdot v))^5$$
 
-  其中 h, v 都熟悉，F0 是个什么？F0 被称为 Fresnel Reﬂectance Values，其大体上能描述**一个材质（考虑为平滑的完美平面）将照上去的整个光谱的光通过直接反射输出的光的能量比率**。问题来了：除了直接反射输出的光，还有如何输出的光呢？这里就要提到次表面散射 Subsurface Scattering 的概念了：
+  其中 h, v 都熟悉，F0 是个什么？F0 被称为 Fresnel Reﬂectance Values，其大体上能描述**一个材质（考虑为平滑的完美平面）将照上去的不同颜色（此处可以考虑为RGB）的光通过直接反射输出的光的能量比率**。问题来了：除了直接反射输出的光，还有如何输出的光呢？这里就要提到次表面散射 Subsurface Scattering 的概念了：
 
   ![](https://learnopengl.com/img/pbr/surface_reaction.png)
   
@@ -129,7 +131,7 @@ $$f_{cook-torrance} = \frac{DFG}{4(\omega_o \cdot n)(\omega_i \cdot n)}$$
 
 这里再复习一下到底是谁决定了物体的颜色：
 
-* 金属：全部为 F0，kd = 0。入射的一瞬间金属表面吸收不同波长的光，产生颜色并出射。
+* 金属：全部为 F0，kd = 0。入射的一瞬间金属表面吸收不同波长的光（产生材质的颜色）并**直接反射**。
 * 电介质： 几乎全是次表面散射的贡献值 kd，只有一小小部分为F0（因为毕竟平均还有 0.04 呢嘛）。
 
 看来 F0 和 kd 的混合就可以做到让这套算法兼容两者：
@@ -145,7 +147,7 @@ kd *= 1.0 - metallic;
 
 综上，对于一个材质面板来说，和 PBR 有关系的属性如下：
 
-* albedo：可以是纯色，可以是纹理，也可以是纹理 + tint。当纯金属时该值直接代表了F0。
+* albedo：可以是纯色，可以是纹理，也可以是纹理 + tint。当纯金属时该值直接代表了 F0（即直接反射率，因为金属也不会有次表面反射）。
 * metalness / metallic：取值范围 [0, 1]，同样也可以是纹理。
 * roughness：取值范围 [0, 1]，决定着微平面属性，同样也可以是纹理。
 
@@ -222,8 +224,7 @@ float GeometrySchlickGGX(float NdotV, float roughness);
 float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness);
 vec3 fresnelSchlick(float cosTheta, vec3 F0);
 
-void main()
-{		
+void main() {		
     vec3 N = normalize(Normal);
     vec3 V = normalize(camPos - WorldPos);
 
