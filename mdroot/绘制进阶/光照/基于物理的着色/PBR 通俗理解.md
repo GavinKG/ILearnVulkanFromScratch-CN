@@ -289,3 +289,9 @@ LearnOpenGL 的代码在这个链接中：
 https://learnopengl.com/PBR/Lighting
 
 https://learnopengl.com/code_viewer_gh.php?code=src/6.pbr/1.1.lighting/1.1.pbr.fs
+
+SIGGRAPH:
+
+[SIGGRAPH University - Introduction to "Physically Based Shading in Theory and Practice"](https://www.youtube.com/watch?v=j-A0mwsJRmk)
+
+[Physically Based Shading in Theory and Practice](https://www.youtube.com/watch?v=zs0oYjwjNEo)
