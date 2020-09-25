@@ -1,6 +1,8 @@
 ##  Subpass 实战：延迟渲染
 
-上面提到了，subpass 在对于 tile-based renderer 实现延迟着色有着很大的优化作用，即 TBDR（tile-based deferred rendering），因此这里使用 subpass 实现一个简单的延迟着色过程。延迟着色原理在后面的章节中有具体的教程，这里省略。
+上面提到了，subpass 在 Deferred Renderer 中能够利用起绝大多数移动 GPU 上带的片上高速缓存，起到很大的优化作用，因此这里使用 subpass 实现一个非常简单的延迟着色过程，将几何和光照解耦合。
+
+需要注意，行业内 Deferred Renderer 真正使用的 G-Buffer 往往有着复杂很多的设计（PBR / Material ID 等等额外的 Buffer），同时在移动设备上也大量使用了  TBDR 做光源剔除，因此此处的 G-Buffer 遵循教程，仅限演示，不具备实际实用意义。
 
 该案例中 subpass 流程图如下：
 
@@ -11,8 +13,6 @@
 1. 渲染 G-buffer，依照上图顺序由三个 color attachment：albedo 颜色，世界空间位置，世界空间法线和一个 depth/stencil attachment 构成。注意 G-buffer 传出的数据一定要在同一空间坐标系中，该案例使用世界空间坐标系。
 2. G-buffer Composition：依照 G-buffer 渲染光照并合成到最终颜色 attachment。
 3. Transparency：依照 depth attachment 渲染半透明物体，叠加到最终颜色 attachment。
-
-延迟着色的原理此处不再赘述，可参考 [https://learnopengl-cn.readthedocs.io/zh/latest/05%20Advanced%20Lighting/08%20Deferred%20Shading/](https://learnopengl-cn.readthedocs.io/zh/latest/05 Advanced Lighting/08 Deferred Shading/)
 
 相关数据准备如下：
 

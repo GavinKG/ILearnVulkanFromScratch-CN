@@ -4,9 +4,9 @@
 
 ### Subpass 和 Input Attachments
 
-传统的 multi-pass 系统中每个 pass 结束时会渲染出一系列独立的图像，即 attachment image views，供下一个 pass 采样（比如说 combined image sampler）。由于对一个 sampler 采样不受任何限制，所以我们可以在 fragment shader 中对邻近的像素进行采样，从而实现一些复杂的后处理特效（所有的 kernel-based 特效都需要采样临近像素）。当然有些时候，对于一个 framebuffer 来说，一个像素计算好的数据只会被下一个pass的同一个位置的像素利用，例如延迟着色时的 G-buffer 合成，以及一些不太复杂的特效，比如说亮度对比度等。
+传统的 multi-pass 系统中每个 pass 结束时会渲染出一系列独立的图像，即 attachment image views，供下一个 pass 采样（比如说 combined image sampler）。由于对一个 sampler 采样不受任何限制，所以我们可以在 fragment shader 中对邻近的像素进行采样，从而实现一些复杂的后处理特效（所有的 kernel-based 特效都需要采样临近像素）。当然有些时候，对于一个 framebuffer 来说，一个像素计算好的数据只会被下一个pass的同一个位置的像素利用，例如延迟着色时的 G-buffer 光照计算，以及一些不太复杂的特效，比如说亮度对比度等。
 
-但 multi-pass 也有着性能的问题：一个 pass 渲染好的 image 要被统一存到一个 Framebuffer 中，随后在第二个 pass 中再被分散到不同的 shader 中去，这对于 tile-based renderer 平台是致命的：对于上述提到的那些”只会被同一个位置的像素所利用“的适用情形，这些像素本可以在每个 tile 的高速片上内存直接被下一个 pass 使用，但由于要统一存放在 VRAM 的 framebuffer 中，每个 tile 的片上内存数据一直在被收集-分散-收集-分散，tile memory 几乎起不到任何作用，极大的浪费了性能，加大了数据传输所导致的能耗，完全违背移动端 TBR 的初衷。
+但 multi-pass 也有着性能的问题：一个 pass 渲染好的 image 要被统一存到一个 Framebuffer 中，随后在第二个 pass 中再被分散到不同的 shader 中去，这对于 tile-based renderer 平台是致命的：对于上述提到的那些”只会被同一个位置的像素所利用“的适用情形，这些像素本可以在每个 tile 的高速片上内存直接被下一个 pass 使用，但由于要统一存放在 VRAM 的 framebuffer 中，每个 tile 的片上内存数据一直在被收集-分散-收集-分散，tile memory 几乎起不到任何作用，极大的浪费了性能，加大了数据传输所导致的带宽消耗（在移动端直接带来一个致命问题：发热降频），完全违背移动端 TBR 架构的初衷。
 
 subpass 就解决了这个问题。后一个 subpass 所使用的 attachments 的像素可以直接从前一个 subpass 的 attachments 中的对应位置读取，从而免去了收集的过程。当然需要注意的是，下一个 subpass 不能对临近像素进行采样了，只能使用同一位置的像素信息。这些 attachments 便被称为 input attachments。
 
