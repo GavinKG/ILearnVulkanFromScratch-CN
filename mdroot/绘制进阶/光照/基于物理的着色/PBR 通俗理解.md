@@ -295,3 +295,9 @@ SIGGRAPH:
 [SIGGRAPH University - Introduction to "Physically Based Shading in Theory and Practice"](https://www.youtube.com/watch?v=j-A0mwsJRmk)
 
 [Physically Based Shading in Theory and Practice](https://www.youtube.com/watch?v=zs0oYjwjNEo)
+
+商业引擎/渲染器中实现PBR的链接：
+
+https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@11.0/manual/shading-model.html
+
+https://marmoset.co/posts/physically-based-rendering-and-you-can-too/
