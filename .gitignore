@@ -10,8 +10,12 @@ node_modules
 # Book build output
 _book
 _site
+.bookignore
 
 # eBook build output
 *.epub
 *.mobi
 *.pdf
+
+# Source markdown files
+*.md
