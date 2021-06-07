@@ -6,12 +6,14 @@
     "language" : "zh-hans",
     "plugins" : [
         "-sharing",
+		"-lunr",
 		"github-buttons",
 		"expandable-chapters-small",
 		"splitter",
 		"sitemap-general",
         "page-toc",
-        "katex"
+        "katex",
+		"search-plus"
     ],
 	"pluginsConfig": {
         "github-buttons": {
