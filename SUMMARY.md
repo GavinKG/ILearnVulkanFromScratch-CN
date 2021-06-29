@@ -4,12 +4,12 @@
 
 * [Vulkan 基础](mdroot/Vulkan 基础.md)
     * [准备流程](mdroot/Vulkan 基础/准备流程.md)
-      * [使用 GFLW 创建窗口](mdroot/Vulkan 基础/准备流程/使用 GFLW 创建窗口.md)
+      * [使用 GLWF 创建窗口](mdroot/Vulkan 基础/准备流程/使用 GLWF 创建窗口.md)
       
       * [初始化 Vulkan 实例](mdroot/Vulkan 基础/准备流程/初始化 Vulkan 实例.md)
       
       * [验证层](mdroot/Vulkan 基础/准备流程/验证层.md)
-      * [借助 GFLW 创建 Surface](mdroot/Vulkan 基础/准备流程/借助 GFLW 创建 Surface.md)
+      * [借助 GLFW 创建 Surface](mdroot/Vulkan 基础/准备流程/借助 GLFW 创建 Surface.md)
       
       * [指定物理设备](mdroot/Vulkan 基础/准备流程/指定物理设备.md)
       
@@ -210,9 +210,9 @@
       * [点光源阴影与全向阴影贴图](mdroot/绘制进阶/阴影/点光源阴影与全向阴影贴图.md)
       
       * [级联阴影映射](mdroot/绘制进阶/阴影/级联阴影映射.md)
-      
-* [骨骼动画](mdroot/绘制进阶/骨骼动画.md)
     
+* [骨骼动画](mdroot/绘制进阶/骨骼动画.md)
+  
 * [概念汇总](mdroot/概念汇总.md)
 
   * [设备与逻辑设备 Physical / Logical Device](mdroot/概念汇总/设备与逻辑设备.md)
@@ -240,4 +240,3 @@
   * [同步 synchronization](mdroot/概念汇总/同步.md)
 
   * [Shader 的数据流向](mdroot/概念汇总/Shader 的数据流向.md)
-  

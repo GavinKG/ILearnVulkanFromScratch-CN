@@ -5,7 +5,7 @@
 
 ### 初始化顺序
 
-一个Instance类似于一个Session，在instance里处理所有的和Vulkan有关的东西。初始化这些东西比较走流程，这里直接列出来吧：
+一个 Instance 类似于一个 Session（类比一下虚幻引擎的`GameInstance`），在 instance 里处理所有的和 Vulkan 有关的东西。初始化这些东西比较走流程，这里直接列出来吧：
 
 * 添加一个成员变量`VkInstance instance`；
 
@@ -30,8 +30,7 @@
 * 创建Instance
   `VkResult result = vkCreateInstance(&createInfo, nullptr, &instance);`
 
-用完别忘删，在`cleanUp()`中
-`vkDestroyInstance(instance, nullptr);`
+用完别忘删，在`cleanUp()`中`vkDestroyInstance(instance, nullptr);`
 
 ### 扩展支持
 
