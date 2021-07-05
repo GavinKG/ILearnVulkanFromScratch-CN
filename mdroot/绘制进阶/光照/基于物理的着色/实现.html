@@ -188,12 +188,12 @@
             <ul class="articles">
                 
     
-        <li class="chapter " data-level="1.4.1.1" data-path="../../../Vulkan 基础/准备流程/使用 GFLW 创建窗口.html">
+        <li class="chapter " data-level="1.4.1.1" data-path="../../../Vulkan 基础/准备流程/使用 GLFW 创建窗口.html">
             
-                <a href="../../../Vulkan 基础/准备流程/使用 GFLW 创建窗口.html">
+                <a href="../../../Vulkan 基础/准备流程/使用 GLFW 创建窗口.html">
             
                     
-                    使用 GFLW 创建窗口
+                    使用 GLFW 创建窗口
             
                 </a>
             
@@ -227,12 +227,12 @@
             
         </li>
     
-        <li class="chapter " data-level="1.4.1.4" data-path="../../../Vulkan 基础/准备流程/借助 GFLW 创建 Surface.html">
+        <li class="chapter " data-level="1.4.1.4" data-path="../../../Vulkan 基础/准备流程/借助 GLFW 创建 Surface.html">
             
-                <a href="../../../Vulkan 基础/准备流程/借助 GFLW 创建 Surface.html">
+                <a href="../../../Vulkan 基础/准备流程/借助 GLFW 创建 Surface.html">
             
                     
-                    借助 GFLW 创建 Surface
+                    借助 GLFW 创建 Surface
             
                 </a>
             
@@ -2318,7 +2318,7 @@
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"实现","level":"1.11.1.3.3","depth":4,"next":{"title":"后处理特效","level":"1.11.2","depth":2,"path":"mdroot/绘制进阶/后处理特效.md","ref":"mdroot/绘制进阶/后处理特效.md","articles":[{"title":"全屏幕多边形","level":"1.11.2.1","depth":3,"path":"mdroot/绘制进阶/后处理特效/全屏幕多边形.md","ref":"mdroot/绘制进阶/后处理特效/全屏幕多边形.md","articles":[]},{"title":"后处理特效汇总","level":"1.11.2.2","depth":3,"path":"mdroot/绘制进阶/后处理特效/后处理特效汇总.md","ref":"mdroot/绘制进阶/后处理特效/后处理特效汇总.md","articles":[]}]},"previous":{"title":"IBL","level":"1.11.1.3.2","depth":4,"path":"mdroot/绘制进阶/光照/基于物理的着色/IBL.md","ref":"mdroot/绘制进阶/光照/基于物理的着色/IBL.md","articles":[]},"dir":"neutral"},"config":{"plugins":["-sharing","-lunr","github-buttons","expandable-chapters-small","splitter","sitemap-general","page-toc","katex","search-plus"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"splitter":{},"search":{},"page-toc":{"position":"before-first","selector":".markdown-section h1, .markdown-section h2, .markdown-section h3, .markdown-section h4","showByDefault":true},"sitemap-general":{"prefix":"https://gavinkg.github.io/ILearnVulkanFromScratch-CN/"},"katex":{},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"github-buttons":{"buttons":[{"user":"GavinKG","repo":"ILearnVulkanFromScratch-CN","type":"star","size":"small"}]},"expandable-chapters-small":{},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"search-plus":{}},"theme":"default","author":"Gavin KG","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Vulkan 学习笔记","language":"zh-hans","gitbook":"*","description":"Vulkan 学习笔记"},"file":{"path":"mdroot/绘制进阶/光照/基于物理的着色/实现.md","mtime":"2021-01-12T08:21:16.000Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2021-06-07T06:09:34.617Z"},"basePath":"../../../..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"实现","level":"1.11.1.3.3","depth":4,"next":{"title":"后处理特效","level":"1.11.2","depth":2,"path":"mdroot/绘制进阶/后处理特效.md","ref":"mdroot/绘制进阶/后处理特效.md","articles":[{"title":"全屏幕多边形","level":"1.11.2.1","depth":3,"path":"mdroot/绘制进阶/后处理特效/全屏幕多边形.md","ref":"mdroot/绘制进阶/后处理特效/全屏幕多边形.md","articles":[]},{"title":"后处理特效汇总","level":"1.11.2.2","depth":3,"path":"mdroot/绘制进阶/后处理特效/后处理特效汇总.md","ref":"mdroot/绘制进阶/后处理特效/后处理特效汇总.md","articles":[]}]},"previous":{"title":"IBL","level":"1.11.1.3.2","depth":4,"path":"mdroot/绘制进阶/光照/基于物理的着色/IBL.md","ref":"mdroot/绘制进阶/光照/基于物理的着色/IBL.md","articles":[]},"dir":"neutral"},"config":{"plugins":["-sharing","-lunr","github-buttons","expandable-chapters-small","splitter","sitemap-general","page-toc","katex","search-plus"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"splitter":{},"search":{},"page-toc":{"position":"before-first","selector":".markdown-section h1, .markdown-section h2, .markdown-section h3, .markdown-section h4","showByDefault":true},"sitemap-general":{"prefix":"https://gavinkg.github.io/ILearnVulkanFromScratch-CN/"},"katex":{},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"github-buttons":{"buttons":[{"user":"GavinKG","repo":"ILearnVulkanFromScratch-CN","type":"star","size":"small"}]},"expandable-chapters-small":{},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"search-plus":{}},"theme":"default","author":"Gavin KG","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Vulkan 学习笔记","language":"zh-hans","gitbook":"*","description":"Vulkan 学习笔记"},"file":{"path":"mdroot/绘制进阶/光照/基于物理的着色/实现.md","mtime":"2021-01-12T08:21:16.000Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2021-07-05T07:23:37.382Z"},"basePath":"../../../..","book":{"language":""}});
         });
     </script>
 </div>
