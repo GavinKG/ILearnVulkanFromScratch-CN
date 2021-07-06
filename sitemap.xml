@@ -5,10 +5,9 @@
 <url> <loc>https://gavinkg.github.io/ILearnVulkanFromScratch-CN/mdroot/Vulkan%20命名和使用规范.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
 <url> <loc>https://gavinkg.github.io/ILearnVulkanFromScratch-CN/mdroot/Vulkan%20基础.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
 <url> <loc>https://gavinkg.github.io/ILearnVulkanFromScratch-CN/mdroot/Vulkan%20基础/准备流程.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
-<url> <loc>https://gavinkg.github.io/ILearnVulkanFromScratch-CN/mdroot/Vulkan%20基础/准备流程/使用%20GLFW%20创建窗口.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://gavinkg.github.io/ILearnVulkanFromScratch-CN/mdroot/Vulkan%20基础/准备流程/使用%20GLWF%20创建窗口.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
 <url> <loc>https://gavinkg.github.io/ILearnVulkanFromScratch-CN/mdroot/Vulkan%20基础/准备流程/初始化%20Vulkan%20实例.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
 <url> <loc>https://gavinkg.github.io/ILearnVulkanFromScratch-CN/mdroot/Vulkan%20基础/准备流程/验证层.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
-<url> <loc>https://gavinkg.github.io/ILearnVulkanFromScratch-CN/mdroot/Vulkan%20基础/准备流程/借助%20GLFW%20创建%20Surface.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
 <url> <loc>https://gavinkg.github.io/ILearnVulkanFromScratch-CN/mdroot/Vulkan%20基础/准备流程/指定物理设备.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
 <url> <loc>https://gavinkg.github.io/ILearnVulkanFromScratch-CN/mdroot/Vulkan%20基础/准备流程/抽象逻辑设备.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
 <url> <loc>https://gavinkg.github.io/ILearnVulkanFromScratch-CN/mdroot/Vulkan%20基础/准备流程/Swap%20Chain.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
@@ -146,4 +145,5 @@
 <url> <loc>https://gavinkg.github.io/ILearnVulkanFromScratch-CN/mdroot/概念汇总/资源描述符集.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
 <url> <loc>https://gavinkg.github.io/ILearnVulkanFromScratch-CN/mdroot/概念汇总/同步.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
 <url> <loc>https://gavinkg.github.io/ILearnVulkanFromScratch-CN/mdroot/概念汇总/Shader%20的数据流向.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
+<url> <loc>https://gavinkg.github.io/ILearnVulkanFromScratch-CN/mdroot/概念汇总/不同图形%20API%20之间的区别.html</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> </url>
 </urlset>
