@@ -4,7 +4,7 @@
 
 * [Vulkan 基础](mdroot/Vulkan 基础.md)
     * [准备流程](mdroot/Vulkan 基础/准备流程.md)
-      * [使用 GLWF 创建窗口](mdroot/Vulkan 基础/准备流程/使用 GLWF 创建窗口.md)
+      * [使用 GLFW 创建窗口](mdroot/Vulkan 基础/准备流程/使用 GLFW 创建窗口.md)
       
       * [初始化 Vulkan 实例](mdroot/Vulkan 基础/准备流程/初始化 Vulkan 实例.md)
       
