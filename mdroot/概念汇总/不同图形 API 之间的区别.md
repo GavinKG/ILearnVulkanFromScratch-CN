@@ -50,6 +50,8 @@
   Unity 在 Shader 中使用 `UNITY_NEAR_CLIP_VALUE` 判定深度范围的问题，在OpenGL平台该宏取值为-1，其余平台为0。需要注意的是，Unity 在所有非 OpenGL 平台上都做了Reversed-Z 优化（OpenGL 的 [-1, 1] 不好做 Reversed-Z），因此真正的近平面值也需要考虑 `UNITY_REVERSED_Z` 宏。
 
   ```glsl
+  // HLSLSupport.cginc:558
+  
   #if defined(SHADER_API_D3D11) || defined(SHADER_API_PSSL) || defined(SHADER_API_XBOXONE) || defined(SHADER_API_METAL) || defined(SHADER_API_VULKAN) || defined(SHADER_API_SWITCH)
   // D3D style platforms where clip space z is [0, 1].
   #define UNITY_REVERSED_Z 1
