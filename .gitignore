@@ -15,3 +15,5 @@ _site
 *.epub
 *.mobi
 *.pdf
+
+.DS_Store
