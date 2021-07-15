@@ -2,6 +2,8 @@
 
 流程方法名：`createSwapChain()`
 
+
+
 > the general purpose of the swap chain is to synchronize the presentation of images with the refresh rate of the screen.
 
 之前提到了，整个流程涉及到两个工序：渲染和呈现，分别由渲染器和呈现引擎（presentation engine）所控制。渲染器负责做计算来渲染图像，而呈现引擎则负责在每一个显示器的 Vblank 向 Surface（例如 Windows 下的 DWM 和 Android 下的 SurfaceFlinger）输送渲染好的画面，然后把这个画面（已经没用了）来回收，类似一个环状队列。想象一个工厂的生产和装箱，生产好的物品放在箱子里运输出去，里面东西用完了再把箱子收回来。渲染器和呈现引擎通过一个队列来交换数据，这个队列就叫做 swap chain。
@@ -13,6 +15,8 @@
 呈现器的实现与操作系统的实现高度相关。Swap Chain 里面的缓冲区可以有多个，但数量是固定的，在创建好之后不可动态插入/删除。
 
 具体解释可以看 **概念汇总** 一章。
+
+
 
 ### 配置参数
 
@@ -45,7 +49,11 @@
 
   图像数量和选择的显示模式有关，但要多了也不会怎么样。一个经验主义的设置方法就是比 `VkSurfaceCapabilitiesKHR` 实例里的 `minImageCount` 多要一个。
 
+
+
 ### 生成Swap Chain
+
+**原文：https://vulkan-tutorial.com/Drawing_a_triangle/Presentation/Swap_chain**
 
 使用上面的参数就可以配置一个`VkSwapchainCreateInfoKHR `结构体实例了。同时还需要配置结构体中：
 
@@ -57,7 +65,6 @@
 
   * `VK_SHARING_MODE_EXCLUSIVE`：一个队列类型（Graphics）独占，显式传送给另一个（Present）队列。这种方法性能最好。
   * `VK_SHARING_MODE_CONCURRENT`：共享模式
-  
 
 若不是一个queue，这里考虑到简洁性采用共享模式。
 
@@ -66,6 +73,8 @@
 * `oldSwapChain`：当 SwapChain 被改变时（改变窗口大小），这里传入老交换链，以供参考。
 
 创建成员变量 `VkSwapchainKHR swapChain` 并用 `vkCreateSwapchainKHR(device, &createInfo, nullptr, &swapChain)` 创建出来。在程序最后的 cleanup 阶段也需要用`vkDestroySwapchainKHR` 进行销毁。
+
+
 
 ### 获取Swap Chain中的图像
 
@@ -79,3 +88,61 @@
 VkFormat swapChainImageFormat = surfaceFormat.format; // VK_FORMAT_B8G8R8A8_UNORM
 VkExtent2D swapChainExtent = extent; // 800 x 600
 ```
+
+
+
+### 代码实现
+
+```cpp
+    void createSwapChain() {
+        SwapChainSupportDetails swapChainSupport = querySwapChainSupport(physicalDevice);
+
+        VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
+        VkPresentModeKHR presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
+        VkExtent2D extent = chooseSwapExtent(swapChainSupport.capabilities);
+
+        uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
+        if (swapChainSupport.capabilities.maxImageCount > 0 && imageCount > swapChainSupport.capabilities.maxImageCount) {
+            imageCount = swapChainSupport.capabilities.maxImageCount;
+        }
+
+        VkSwapchainCreateInfoKHR createInfo = {};
+        createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+        createInfo.surface = surface;
+
+        createInfo.minImageCount = imageCount;
+        createInfo.imageFormat = surfaceFormat.format;
+        createInfo.imageColorSpace = surfaceFormat.colorSpace;
+        createInfo.imageExtent = extent;
+        createInfo.imageArrayLayers = 1;
+        createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+
+        QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
+        uint32_t queueFamilyIndices[] = { indices.graphicsFamily.value(), indices.presentFamily.value() };
+
+        if (indices.graphicsFamily != indices.presentFamily) {
+            createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
+            createInfo.queueFamilyIndexCount = 2;
+            createInfo.pQueueFamilyIndices = queueFamilyIndices;
+        } else {
+            createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+        }
+
+        createInfo.preTransform = swapChainSupport.capabilities.currentTransform;
+        createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+        createInfo.presentMode = presentMode;
+        createInfo.clipped = VK_TRUE;
+
+        if (vkCreateSwapchainKHR(device, &createInfo, nullptr, &swapChain) != VK_SUCCESS) {
+            throw std::runtime_error("failed to create swap chain!");
+        }
+
+        vkGetSwapchainImagesKHR(device, swapChain, &imageCount, nullptr);
+        swapChainImages.resize(imageCount);
+        vkGetSwapchainImagesKHR(device, swapChain, &imageCount, swapChainImages.data());
+
+        swapChainImageFormat = surfaceFormat.format;
+        swapChainExtent = extent;
+    }
+```
+

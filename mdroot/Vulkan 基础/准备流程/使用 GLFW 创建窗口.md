@@ -1,5 +1,7 @@
 ## 使用 GLFW 创建窗口
 
+**原文：https://vulkan-tutorial.com/Drawing_a_triangle/Setup/Base_code**
+
 这里使用GLFW（Graphics Library Framework）初始化一个窗口。GLFW 具体是做什么的可以直接去维基看（https://zh.wikipedia.org/zh-hans/GLFW，其实说的也很简练，最好直接去官网看doc）。
 
 一个使用 GLFW 完整驱动的大致流程如下：

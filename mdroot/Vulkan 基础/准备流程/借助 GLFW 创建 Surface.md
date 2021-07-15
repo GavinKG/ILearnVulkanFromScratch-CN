@@ -2,6 +2,8 @@
 
 ## 借助 GLFW 创建 Surface
 
+**原文：https://vulkan-tutorial.com/Drawing_a_triangle/Presentation/Window_surface**
+
 流程方法名：`createSurface()`
 
 一个 surface 是一个呈现 Rendered Image 的“表面”，实现它极大程度依赖操作系统。这里我们交给 GLFW 来帮忙。

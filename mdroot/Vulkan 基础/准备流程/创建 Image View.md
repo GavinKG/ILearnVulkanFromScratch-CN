@@ -1,5 +1,7 @@
 ## 创建 Image View
 
+**原文：https://vulkan-tutorial.com/Drawing_a_triangle/Presentation/Image_views**
+
 流程方法名：`createImageViews()`
 
 创建好 Swap Chain 之后，我们需要把这个队列中的每一个 Image 生成一个 Image View。
