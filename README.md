@@ -18,6 +18,12 @@ gavin_kg@outlook.com
 
 
 
+### Update Log
+
+**2021/7/20 Update:**
+
+最近一直在实习，一直在忙 UE/Unity 的引擎架构向开发工作，但这篇笔记也依然会继续更新，主要还是两个方面起步：Vulkan 的高阶特性，以及绘制算法的 Vulkan 高效实现。
+
 **2020/9/25 Update:**
 
 虽然该网站给出的案例其实和行业中真正使用的技术相差比较大，但是作为 Vulkan 入门，这些案例还是值得反复品味的。我也打算继续把在行业中学到的很多 Vulkan 以及图形学技巧记录到之后的进阶章节中。
@@ -26,9 +32,9 @@ gavin_kg@outlook.com
 
 ---
 
-GitHub Repo: https://github.com/GavinKG/ILearnVulkanFromScratch-CN
-
 GitHub Pages: https://gavinkg.github.io/ILearnVulkanFromScratch-CN/
+
+GitHub Repo: https://github.com/GavinKG/ILearnVulkanFromScratch-CN
 
 
 
