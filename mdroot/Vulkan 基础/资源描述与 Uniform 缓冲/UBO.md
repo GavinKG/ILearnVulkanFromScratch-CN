@@ -1,8 +1,12 @@
 ## Uniform Buffer Object
 
+**原文：https://vulkan-tutorial.com/Uniform_buffers/Descriptor_pool_and_sets。这里我打乱顺序重新组织了一下。**
+
+
+
 ### 概念
 
-如上所述，资源描述分为很多种，由于这里要实现三维的变换，需要传入 MVP 矩阵，所以我们需要一种特定的资源描述，叫 Uniform Buffer Object。其对应Shader 中的 uniform 常量。之所以称之为 Uniform，正是因为这些数据（在没有显式被客户端改变时）在所有使用这些数据的 Shader 实例中都不会改变。
+如上所述，资源描述分为很多种，由于这里要实现三维的变换，需要传入 MVP 矩阵，所以我们需要一种特定的资源描述，叫 Uniform Buffer Object。其对应 Shader 中的 uniform 常量。之所以称之为 Uniform，正是因为这些数据（在没有显式被客户端改变时）在所有使用这些数据的 Shader 实例中都不会改变。
 
 在 C++ 客户端中，一个我们需要的 UBO 结构体如下所示。注意：glm 代数库中的 `glm::mat4` 类可直接对应上 shader 中 `mat4` 类型，即这两个类型二进制兼容，同时这个结构体满足一样的布局，所以在复制到 buffer 时可以直接用 `memcpy` 函数。
 
@@ -40,7 +44,7 @@ void main() {
 
 由于其工作需要，每一帧都有可能对其进行数据的改变，就如这里的传递 MVP 的做法一样，所以这里没有必要为其声明 Staging Buffer，而相反，场景中的顶点们一旦声明出来可能会有一段时间不进行修改。
 
-由于 uniform buffer 需要在 command buffer 中被引用，而 command buffer 数量对应着 swap chain image 的数量，所以这里创建的 uniform buffer 数量与 swap chain image 的数量一致。
+在该案例中，由于 uniform buffer 需要在 command buffer 中被引用，而 command buffer 数量对应着 swap chain image 的数量，所以这里创建的 uniform buffer 数量与 swap chain image 的数量一致。
 
 同上，创建两个成员变量 `std::vector<VkBuffer> uniformBuffers` 和 `std::vector<VkDeviceMemory> uniformBuffersMemory` 并 `resize` 为 swap chain image 的数量。
 
@@ -66,7 +70,7 @@ for (size_t i = 0; i < swapChainImages.size(); i++) {
 
 ### 更新 Uniform Buffer
 
-这里就要进入到真正的变换运算环节了。首先通过捕获运行时长来计算旋转角度，即 `angle = time * anglePerSec`。通过使用标准库中的的高精度时钟`std::chrono::steady_clock`（不要使用教程中使用的 `high_resolution_clock`，因为其可能被 typedef 为 `system_clock`） 并在每次渲染中获取到该帧与**第一帧**的时间差：
+这里就要进入到真正的变换运算环节了。首先通过**捕获运行时长**来计算旋转角度，即 `angle = time * anglePerSec`。通过使用标准库中的的高精度时钟`std::chrono::steady_clock`（注意，不要使用教程中使用的 `high_resolution_clock`，因为其可能被 typedef 为 `system_clock`） 并在每次渲染中获取到该帧与**第一帧**的时间差：
 
 ```cpp
 static auto startTime = std::chrono::steady_clock::now();
@@ -88,7 +92,7 @@ ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f),
 ubo.proj = glm::perspective(glm::radians(45.0f), swapChainExtent.width / (float) swapChainExtent.height, 0.1f, 10.0f);
 ```
 
-由于 GLM 是给 OpenGL 设计的，所以其默认的裁剪空间 y 轴是与 DirectX（当然，还有 Vulkan）相反的，这里使用 `ubo.proj[1][1] *= -1` 再给它反回来。
+由于 GLM 是给 OpenGL 设计的，所以其默认的裁剪空间 y 轴是与 Vulkan 相反的，这里使用 `ubo.proj[1][1] *= -1` 再给它反回来。具体区别可以参考 **概念汇总** 一章中的 **不同图形 API 之间的区别** 子章节。
 
 算出所有变换矩阵后，使用和之前一样的方法配置内存映射，并将值 `memcpy` 到映射的内存中：
 

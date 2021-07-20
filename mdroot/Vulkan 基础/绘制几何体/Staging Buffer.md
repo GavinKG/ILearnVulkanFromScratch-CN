@@ -1,6 +1,8 @@
 ## Staging Buffer
 
-### 用途
+**原文：https://vulkan-tutorial.com/Vertex_buffers/Staging_buffer**
+
+
 
 由于硬件限制，很多时候提供一片同时能被 GPU 和 CPU 读写的内存（both device local and host visible）不是一件容易的事情，这尤其体现在与独立显卡的交互过程中：CPU 不得不在背后将所有数据从 PCI-E 总线发到 GPU 端，这比起直接访问显卡设备的 VRAM 要慢很多。
 
@@ -10,9 +12,13 @@
 
 附：VMA 库并没有 Staging Buffer 的概念，所以即使使用 VMA 也需要手动进行 Transfer。同时，VMA 库有一种能够识别 VRAM 是否也能 host visible 的方法，详见doc。
 
+
+
 ### 转移队列
 
 为了实现从暂存缓冲（源，src）将顶点转移到高速顶点缓冲（目标，dst）中，这里需要使用到 transfer queue，也就是支持 `VK_QUEUE_TRANSFER_BIT` 的queue family。不过很巧的是，所有图像（Graphics）队列都支持转移操作，所以这里直接将转移命令提交到图像（Graphics）队列就好。当然，如果需要绘制的内容时常全部更改，转移操作很频繁，可以考虑专门新建一个 transfer queue，这样 Vulkan **可能**能够更好的安排队列的并行执行，从而优化程序性能。
+
+
 
 ### 使用暂存缓冲
 
@@ -73,7 +79,5 @@ void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
     vkFreeCommandBuffers(device, commandPool, 1, &commandBuffer);
 }
 ```
-
-
 
 对拷结束之后，在本例中暂存缓冲的用处也就没有了。使用 `vkDestroyBuffer` 和 `vkFreeMemory` 释放掉这个同样短命的 staging buffer。

@@ -49,9 +49,7 @@
       * [UBO](mdroot/Vulkan 基础/资源描述与 Uniform 缓冲/UBO.md)
     
 * [图像纹理](mdroot/Vulkan 基础/图像纹理.md)
-  
-  * [流程](mdroot/Vulkan 基础/图像纹理/流程.md)
-    
+
   * [从外部加载图像](mdroot/Vulkan 基础/图像纹理/从外部加载图像.md)
     
   * [创建图像对象](mdroot/Vulkan 基础/图像纹理/创建图像对象.md)
@@ -63,7 +61,7 @@
   * [组合图像采样器](mdroot/Vulkan 基础/图像纹理/组合图像采样器.md)
     
   * [纹理坐标](mdroot/Vulkan 基础/图像纹理/纹理坐标.md)
-  
+
 * [深度缓冲](mdroot/Vulkan 基础/深度缓冲.md)
   
   * [介绍](mdroot/Vulkan 基础/深度缓冲/介绍.md)
