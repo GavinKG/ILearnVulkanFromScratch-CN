@@ -21,7 +21,7 @@
 
 **Workarounds：**
 
-* OpenGL 4.5 可以使用 [ARB_clip_control](https://www.khronos.org/registry/OpenGL/extensions/ARB/ARB_clip_control.txt) 将深度范围从 `[-1, 1]` 转换为 `[1, 1]`，GLES 和 WebGL 并不支持：
+* OpenGL 4.5 可以使用 [ARB_clip_control](https://www.khronos.org/registry/OpenGL/extensions/ARB/ARB_clip_control.txt) 将深度范围从 `[-1, 1]` 转换为 `[0, 1]`，GLES 和 WebGL 并不支持：
 
   > This extension can be used to render content used in a Direct3D
   >   application in OpenGL in a straightforward way without modifying vertex or
