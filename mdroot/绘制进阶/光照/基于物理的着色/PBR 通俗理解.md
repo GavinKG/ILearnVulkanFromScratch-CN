@@ -1,4 +1,4 @@
-# PBR 通俗理解
+# PBR 通俗理解和直接光照
 
 注意，此章仅以最通俗最简单的方法来理解渲染中常用的 PBR 相关理论，故**仅可做为助记使用**。全网有大量的 PBR 原理推导分析文章，能够从 PBR 的发展和选型，物理原理，反射模型公式推导等诸多更详细的方法全面剖析 PBR 理论，这些优质的资料和引用将在本文文末列举出来。
 
@@ -64,7 +64,7 @@ $$f_r = k_d f_{lambert} +  f_{cook-torrance}$$
 
 
 
-### Cook Torrance specular BRDF part
+### Cook Torrance Specular BRDF part
 
 这部分描述那些非漫反射的高光：
 
