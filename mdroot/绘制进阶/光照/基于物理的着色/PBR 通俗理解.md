@@ -70,7 +70,7 @@ $$f_r = k_d f_{lambert} +  f_{cook-torrance}$$
 
 $$f_{cook-torrance} = \frac{DFG}{4(\omega_o \cdot n)(\omega_i \cdot n)}$$
 
-看到这个公式不要慌。三大头 D、F、G 从三大不同角度描述了到底怎么个基于物理。当然这三个函数也不一定都只有一个版本，这里按照 Unreal Engine 的选型来说：
+看到这个公式不要慌。三大头 D、F、G 从三大不同角度描述了到底怎么个基于物理。当然这三个函数也不一定都只有一个版本，这里按照 Unreal Engine 4 的选型来说：
 
 * **D (Normal Distribution Funcion - NDF)：法线分布函数，反映出材质的粗糙程度**
 
@@ -177,7 +177,7 @@ UE4 引擎中材质蓝图的 Lit 着色模型遵循上述 PBR 属性（因为就
 
 Unity 默认提供了两套标准 PBR 材质面板（Shader + CustomEditor），一切通过纹理调参进行，类似于 UE 中的 Material Instance：
 
-* Standard：提供 Albedo，Metallic，Smoothness (即1-Roughness)，和上述情况类似。
+* Standard：提供 Albedo，Metallic，Smoothness (即1-Roughness)，和上述情况类似。只是电介质的 F0 不能被修改，而恒定到 0.04 了。
 
 * Standard (Specular Setup)：将 Metallic 替换为了 Specular，即使用 Specular 工作流。
 
@@ -285,7 +285,7 @@ void main() {
         
         vec3 kS = F;
         vec3 kD = vec3(1.0) - kS;
-        kD *= 1.0 - metallic;	  
+        kD *= 1.0 - metallic;
         
         vec3 numerator    = NDF * G * F;
         float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0);
@@ -299,8 +299,8 @@ void main() {
     vec3 ambient = vec3(0.03) * albedo * ao;
     vec3 color = ambient + Lo;
 	
-    color = color / (color + vec3(1.0));
-    color = pow(color, vec3(1.0/2.2));  
+    color = color / (color + vec3(1.0)); // Tonemapping using Reinhard
+    color = pow(color, vec3(1.0/2.2)); // Gamma Correction，这两部如果走HDR Color Attachment的话可以后处理做，如果走纯Gamma工作流就需要材质输出的时候做，类似于Unity的Gamma和Linear色彩空间设定。
    
     FragColor = vec4(color, 1.0);
 }  
