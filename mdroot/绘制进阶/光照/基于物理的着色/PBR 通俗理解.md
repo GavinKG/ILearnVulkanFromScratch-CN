@@ -31,6 +31,8 @@ $$L_o(p,\omega_o) = \int\limits_{\Omega} f_r(p,\omega_i,\omega_o) L_i(p,\omega_i
 * roughness：描述微平面粗糙程度
 * metalness / metallic：描述材质的金属“程度”。理论上一个材质要不然就是金属要不然就是电介质，但这里允许 [0, 1] 连续取值是因为这么处理可以模拟那种金属上有灰/划痕等小于一个像素的 footprint 的效果。
 
+顺带说一下，除了“BRDF”之外，还存在 BTDF 双向透射，BSDF 双向散射（也就是结合了反射 BRDF 和投射BTDF），BSSRDF 双向表面散射等，可以统称为 BxDF。
+
 
 
 ## 金属与电介质
