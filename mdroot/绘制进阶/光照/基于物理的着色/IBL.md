@@ -8,11 +8,11 @@
 
 算间接光照最简单的想法就是去跟踪场景中的所有光线（来做蒙特卡洛积分），即 Path Tracing，而众所周知光线追踪太tm慢了，所以如果我们能事先捕捉一个该物体周围的场景的全景图，这里使用 Cubemap。当然，全景图也有其它形式的记录方法，例如 Spherical Map（我们常见的 HDRI Map 多用 Spherical Map 表示），其对于地平线的分辨率要高于正上方的天空，比较适合室外这种天空啥都没有的环境。这里沿用 Cubemap 的叫法，毕竟用什么数据形式不是重点，重点是能获取任意方向（立体角）上的一个辐照度值。而每个 Cubemap 的像素都被当成一个小发光体，不就可以差不多做到间接光照了么？当然，理论上物体的每一个细分的表面都应该对应着自己独有的一个半球体光照环境，而不是整个物体共享一个 Cubemap，但是这样的话对于每个细分表面都算 Cubemap，性能开销还不如光线追踪呢，所以**如果周围的物体足够远，整个物体共享一个 Cubemap 的误差也是很小的**。
 
-但是新问题又来了，别忘了渲染方程里的大大的积分符号，我们需要对每个细分表面对整个半球的 Cubemap 采样来的像素做积分。虽然这时候知道每个方向的光通量了，但是积分首先就不好运行时实现，同时因为常见的 BRDF 还分为 Diffuse 和 Specular 两个部分：Diffuse 倒好说，只和入射方向 wi 有关，但需要知道整个半球的光照信息；而 Specular 部分只需要知道高光的那一片（学名叫 Specular Lobe）的光照信息，但和入射出射方向都有关。**所以这里为了快，需要准备两套 IBL 的方法，分别给 BRDF 中的 Diffuse 部分和 Specular 部分用。**
+但是新问题又来了，别忘了渲染方程里的大大的积分符号，我们需要对每个细分表面对整个半球的 Cubemap 采样来的像素做积分。虽然这时候知道每个方向的光通量了，但是积分首先就不好运行时实现，同时因为常见的 BRDF 还分为 Diffuse 和 Specular 两个部分：Diffuse 倒好说，只和入射方向 wi 有关，但需要知道整个半球的光照信息；而 Specular 部分只需要知道高光的那一片（学名叫 Specular Lobe）的光照信息，但和入射出射方向都有关。**所以这里为了快，需要准备两套 IBL 的方法，分别给 BRDF 中的 Diffuse 部分和 Specular (Glossy) 部分用。**
 
-现在先记住这个原始渲染方程公式（不考虑 Visibility 项，也就是阴影和灯光衰减项，因为不涉及这两点；BRDF 项被展开）：
+现在先看一下这个原始渲染方程，这里使用我们一直在用的 Cook-Torrance BRDF，并且把其 Diffuse 项和 Specular 项分开写（不考虑 Visibility 项的阴影和灯光衰减，因为目前不涉及这两点）：
 
-$L_o(p,\omega_o) =  	\int\limits_{\Omega} (k_d\frac{c}{\pi}) L_i(p,\omega_i) n \cdot \omega_i  d\omega_i 	+  	\int\limits_{\Omega} (k_s\frac{DFG}{4(\omega_o \cdot n)(\omega_i \cdot n)}) 		L_i(p,\omega_i) n \cdot \omega_i  d\omega_i$
+$L_o(p,\omega_o) =  	\int\limits_{\Omega} (k_d\frac{c}{\pi}) L_i(p,\omega_i) n \cdot \omega_i  d\omega_i 	+  	\int\limits_{\Omega} (k_s\frac{DFG}{4(\omega_o \cdot n)(\omega_i \cdot n)}) 		L_i(p,\omega_i) n \cdot \omega_i  d\omega_i$​
 
 
 
@@ -73,7 +73,7 @@ irradiance = PI * irradiance * (1.0 / float(nrSamples));
 
 此时该 Irradiance Map 已经可以直接使用了。但考虑到运行时性能和效果，此处还可以做几点增强。我可能在之后的笔记中提到：
 
-* 用 Irradiance Map 算出 SH，提升性能。全局可以使用一个 SH 模拟天光照明（例如 UE4 中的 SkyLight），也可以组建成网格，实现动态物体的 GI（Unity 中的 Light Probe Group，UE 中的 ILC）。https://www.csie.ntu.edu.tw/~cyy/courses/rendering/06fall/lectures/handouts/lec13_SH.pdf
+* 用 Irradiance Map 算出 SH（以及理论依据），提升性能。全局可以使用一个 SH 模拟天光照明（例如 UE4 中的 SkyLight），也可以组建成网格，实现动态物体的 GI（Unity 中的 Light Probe Group，UE 中的 ILC）。https://www.csie.ntu.edu.tw/~cyy/courses/rendering/06fall/lectures/handouts/lec13_SH.pdf
 
 * 使用 Hammersley 随机采样（球面上的均匀采样）实现 Importance Sampling，提升离线资产处理的性能。http://holger.dammertz.org/stuff/notes_HammersleyOnHemisphere.html
 
@@ -85,15 +85,16 @@ irradiance = PI * irradiance * (1.0 / float(nrSamples));
 
  $\int\limits_{\Omega_{f_{r}}} f_r(p, \omega_i, \omega_o) L_i(p,\omega_i) n \cdot \omega_i  d\omega_i$​
 
-之前提到了，只有入射光 wi 为变量的积分可以利用 Cubemap，而这里 wi 和 wo 都成为了变量，并且光照项和 BRDF 项乘在一起，……
+之前提到了，只有入射光 wi 为变量的积分可以利用 Cubemap，而这里 wi 和 wo 都成为了变量，并且光照项和 BRDF 项乘在一起，变量的维度非常高，不适合合在一起进行类似于预计算的操作。
 
-
-
-这里使用**分裂和近似法（Split Sum Approximation）**来拆这个积分，并且将积分拆成 “光照 L 在 BRDF 覆盖范围（Specular Lobe / BRDF Lobe）内的积分” 和 BRDF 本身在其覆盖范围的积分。拆完了以后得到：
+这里使用**分裂和近似法（Split Sum Approximation）**来拆这个积分，并且将积分拆成光照 L 在 BRDF 覆盖范围（Specular Lobe / BRDF Lobe）内的积分和Fresnel 项乘上光通在 BRDF 覆盖范围的积分，也就是**拆成了光照（Lighting）部分和光线传播（Light Transport）部分**。拆完了以后得到：
 
 $L_o(p,\omega_o) \approx  	(\int\limits_{\Omega} L_i(p,\omega_i) d\omega_i)	(\int\limits_{\Omega} f_r(p, \omega_i, \omega_o) n \cdot \omega_i d\omega_i)$​​
 
-顺便说一下，能够保证这么拆积分结果差不多是因为光照部分
+这里说两个问题：
+
+1. 这个约等式其实是对不等式的一种近似。绝大多数情况下此约等式不成立，毕竟真正积分式的乘积是要用分部积分法算的，但实时渲染就喜欢近似和预计算，如果它看起来是对的，那它就是对的。
+2. 之所以叫 “Split Sum”，其实是因为 Epic Games 当初用蒙特卡洛法真正去求解渲染方程时，是把那个蒙特卡洛的大和式拆成了两个小和式，这里的 Sum 指的是和式的 Sum，如果用积分形式直接分解的话理论上应该称之为 ”Split Integral“。
 
 ### 第一部分：光照部分
 
@@ -109,11 +110,13 @@ $L_o(p,\omega_o) \approx  	(\int\limits_{\Omega} L_i(p,\omega_i) d\omega_i)	(\in
 
 ![](https://learnopengl-cn.github.io/img/07/03/02/ibl_grazing_angles.png)
 
-### 第二部分：BRDF 部分
+### 第二部分：光线传播部分
 
-再来看后半部分：$\int\limits_{\Omega} f_r(p, \omega_i, \omega_o) n \cdot \omega_i d\omega_i$
+再来看后半部分：$\int\limits_{\Omega} f_r(p, \omega_i, \omega_o) n \cdot \omega_i d\omega_i$​
 
-这里直接涉及到一个完整的 Microfacet BRDF 公式了，里面的变量有非常的多：光照方向、观察方向、粗糙度、F0，如果我们还想预计算所有这些变量不同值的组合下的积分结果几乎是不现实的。因此我们的思路是一样的：做一些假设砍掉一些变量，想办法让剩下的参数组合能够预计算得到一个贴图，运行时直接采样贴图来得到积分结果就好了。
+这个积分也被称为**镜面积分**。
+
+这里直接涉及到一个完整的 Fresnel 公式了，里面的变量有非常的多：光照方向、观察方向、粗糙度、F0，如果我们还想预计算所有这些变量不同值的组合下的积分结果几乎是不现实的。因此我们的思路是一样的：做一些假设砍掉一些变量，想办法**让剩下的参数组合能够预计算得到一个贴图**，运行时直接采样贴图来得到积分结果就好了。
 
 首先，对于光照方向和观察方向来说，我们假设**观察方向就是光照方向的反射方向**，即 $V=R$​，那么这两个值我们就能够用一个观察方向和法线的夹角 $\theta$​ 来表示了。Nice！
 
@@ -125,7 +128,7 @@ $F_0\int\limits_{\Omega} f_r(p, \omega_i, \omega_o) (1-(1-\omega_o\cdot h)^5)n\c
 
 $F_0 \cdot R + G$
 
-这张图有一个很响亮的名字：**BRDF integration map**，BRDF 积分图，其长这个样子（来自 LearnOpenGL，左下角为坐标原点）：
+这张图有一个很响亮的名字：**BRDF Integration Map**，BRDF 积分图，其长这个样子（来自 LearnOpenGL，左下角为坐标原点）：
 
 ![](https://learnopengl-cn.github.io/img/07/03/02/ibl_brdf_lut.png)
 

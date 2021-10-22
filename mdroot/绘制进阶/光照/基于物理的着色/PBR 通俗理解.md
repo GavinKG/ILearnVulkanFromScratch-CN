@@ -6,13 +6,13 @@
 
 ## 渲染方程
 
-首先看一下这个完整的渲染方程：
+首先看一下渲染方程（此处因为考虑的是直接光照，Visibility 项暂时只考虑直接光源的表面辐射，不考虑光照衰减和阴影）：
 
 $$L_o(p,\omega_o) = \int\limits_{\Omega} f_r(p,\omega_i,\omega_o) L_i(p,\omega_i) n \cdot \omega_i  d\omega_i$$
 
 其中 $$p$$ 代表表面上需要着色的点，$$\omega_i$$ 代表输入方向角，$$\omega_o$$ 代表输出方向角，$$n$$ 代表表面的宏观法向量。
 
-用大白话来说，这个公式描述的是从 $$p$$ 点向 $$\omega_o$$ 方向角出射的光，等于使用 BRDF 算出来的出射能量占入射能量比 $$f_r(p,\omega_i,\omega_o)$$，乘上入射光单位面积光通量 $$L_i(p,\omega_i)$$，再乘上表面辐射 $$n \cdot \omega_i$$。由于要考虑到整个半球面上所有的入射光，因此渲染方程对 $$\omega_i$$ 在整个半球面上做了积分。（有些地方积分域会用 H 符号代替，真正代表半球）
+用大白话来说，这个公式描述的是从 $$p$$​​ 点向 $$\omega_o$$​​ 方向角出射的光，等于使用 BRDF 算出来的出射能量占入射能量比 $$f_r(p,\omega_i,\omega_o)$$​​，乘上入射光单位面积光通量 $$L_i(p,\omega_i)$$​​，再乘上表面辐射 $$n \cdot \omega_i$$​​。由于要考虑到整个半球面上所有的入射光，因此渲染方程对 $$\omega_i$$​​​ 在整个半球面上做了积分。（有些地方积分域会用 H 符号代替，真正代表半球）
 
 此处我们首先只考虑直接光照，即 $$\omega_i$$​ 为固定方向。间接光照、全局光照同样依赖于这个完整的渲染方程，但此时入射光从四面八方射来，如何**高效/投机取巧完成这个积分**将在后续文章记录。
 
@@ -48,7 +48,7 @@ $$L_o(p,\omega_o) = \int\limits_{\Omega} f_r(p,\omega_i,\omega_o) L_i(p,\omega_i
 
 ## Cook-Torrance BRDF
 
-咱们来看看其中一种实时渲染中常见的， Cook 和 Torrance 在1982 年写出来的光反射模型：
+咱们来看看其中一种实时渲染中常见的， Cook 和 Torrance 在1982 年写出来的，**基于微平面理论**的光反射模型：
 
 $$f_r = k_d f_{lambert} +  f_{cook-torrance}$$
 
@@ -312,23 +312,15 @@ void main() {
 
 ## 后记
 
-https://www.cnblogs.com/timlly/p/10631718.html
-
-这里只是大概介绍了一下这个渲染方程大致的结构和每个结构的用处，并没有具体进行数学推导。下面有几个推导的链接：
+保姆级 PBR 教程：https://www.cnblogs.com/timlly/p/10631718.html
 
 https://zhuanlan.zhihu.com/p/21489591
 
 https://www.cnblogs.com/TracePlus/p/4141833.html
 
-Epic Games 在 SIGGRAPH 上的 ppt
+Epic Games 在 SIGGRAPH 上的 ppt，“万恶之源”：https://cdn2.unrealengine.com/Resources/files/2013SiggraphPresentationsNotes-26915738.pdf
 
-https://cdn2-unrealengine-1251447533.file.myqcloud.com/Resources/files/2013SiggraphPresentationsNotes-26915738.pdf
-
-LearnOpenGL 的代码在这个链接中：
-
-https://learnopengl.com/PBR/Lighting
-
-https://learnopengl.com/code_viewer_gh.php?code=src/6.pbr/1.1.lighting/1.1.pbr.fs
+LearnOpenGL：https://learnopengl.com/PBR/Lighting
 
 SIGGRAPH:
 
@@ -336,7 +328,7 @@ SIGGRAPH:
 
 [Physically Based Shading in Theory and Practice](https://www.youtube.com/watch?v=zs0oYjwjNEo)
 
-商业引擎/渲染器中实现PBR的链接：
+商业引擎/渲染器中实现 PBR 的链接：
 
 https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@11.0/manual/shading-model.html
 
