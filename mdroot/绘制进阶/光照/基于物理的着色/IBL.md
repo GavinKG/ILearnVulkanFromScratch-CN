@@ -12,7 +12,7 @@
 
 现在先看一下这个原始渲染方程，这里使用我们一直在用的 Cook-Torrance BRDF，并且把其 Diffuse 项和 Specular 项分开写（不考虑 Visibility 项的阴影和灯光衰减，因为目前不涉及这两点）：
 
-$L_o(p,\omega_o) =  	\int\limits_{\Omega} (k_d\frac{c}{\pi}) L_i(p,\omega_i) n \cdot \omega_i  d\omega_i 	+  	\int\limits_{\Omega} (k_s\frac{DFG}{4(\omega_o \cdot n)(\omega_i \cdot n)}) 		L_i(p,\omega_i) n \cdot \omega_i  d\omega_i$​
+$$L_o(p,\omega_o) =  	\int\limits_{\Omega} (k_d\frac{c}{\pi}) L_i(p,\omega_i) n \cdot \omega_i  d\omega_i 	+  	\int\limits_{\Omega} (k_s\frac{DFG}{4(\omega_o \cdot n)(\omega_i \cdot n)}) 		L_i(p,\omega_i) n \cdot \omega_i  d\omega_i$$
 
 
 
