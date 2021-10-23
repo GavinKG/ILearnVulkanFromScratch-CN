@@ -72,7 +72,7 @@ $$f_r = k_d f_{lambert} +  f_{cook-torrance}$$
 
 $$f_{cook-torrance} = \frac{DFG}{4(\omega_o \cdot n)(\omega_i \cdot n)}$$
 
-看到这个公式不要慌。三大头 D、F、G 从三大不同角度描述了到底怎么个“基于”物理。当然这三个函数也不一定都只有一个版本，这里按照 Unreal Engine 4 的选型来说：
+看到这个公式不要慌。三大头 D、F、G 从三大不同角度描述了到底怎么个“基于”物理。三个函数均是对其表示的现象的一种**近似**，因此这三个函数也不一定都只有一个版本，这里按照 Unreal Engine 4 的选型来说：
 
 * **D (Normal Distribution Funcion - NDF)：法线分布函数，反映出材质的粗糙程度**
 
