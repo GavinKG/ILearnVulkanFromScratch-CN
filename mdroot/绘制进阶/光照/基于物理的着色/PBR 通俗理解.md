@@ -6,9 +6,9 @@
 
 ## 渲染方程
 
-首先看一下渲染方程（此处因为考虑的是直接光照，Visibility 项暂时只考虑直接光源的表面辐射，不考虑光照衰减和阴影）：
+首先看一下渲染方程（此处因为考虑的是直接光照，Visibility 项暂时只考虑直接光源的表面辐射，不考虑光照衰减和遮挡阴影）：
 
-$$L_o(p,\omega_o) = \int\limits_{\Omega} f_r(p,\omega_i,\omega_o) L_i(p,\omega_i) n \cdot \omega_i  d\omega_i$$
+$$L_o(p,\omega_o) = \int\limits_{\Omega} f_r(p,\omega_i,\omega_o) L_i(p,\omega_i) n \cdot \omega_i   \ \mathrm d\omega_i$$
 
 其中 $$p$$ 代表表面上需要着色的点，$$\omega_i$$ 代表输入方向角，$$\omega_o$$ 代表输出方向角，$$n$$ 代表表面的宏观法向量。
 
@@ -72,19 +72,19 @@ $$f_r = k_d f_{lambert} +  f_{cook-torrance}$$
 
 $$f_{cook-torrance} = \frac{DFG}{4(\omega_o \cdot n)(\omega_i \cdot n)}$$
 
-看到这个公式不要慌。三大头 D、F、G 从三大不同角度描述了到底怎么个基于物理。当然这三个函数也不一定都只有一个版本，这里按照 Unreal Engine 4 的选型来说：
+看到这个公式不要慌。三大头 D、F、G 从三大不同角度描述了到底怎么个“基于”物理。当然这三个函数也不一定都只有一个版本，这里按照 Unreal Engine 4 的选型来说：
 
 * **D (Normal Distribution Funcion - NDF)：法线分布函数，反映出材质的粗糙程度**
 
-  **选型：Trowbridge-Reitz GGX**
+  **选型：Trowbridge-Reitz GGX**，或称为 TR/GGX
 
   $$NDF_{GGX TR}(n, h, \alpha) = \frac{\alpha^2}{\pi((n \cdot h)^2 (\alpha^2 - 1) + 1)^2}$$
   
-  这个公式估算了微平面和半程向量 $$h$$ 的对齐程度，从而能够反映出材质的**粗糙程度**。n不用说，就是法向量。h 就是半程向量，即 `normalize(l+v)`。这里 $$\alpha$$ 即是 roughness，也正是因为有 roughness 一说，NDF 的存在才有意义。
+  GGX 模型估算了微平面和半程向量 $$h$$ 的对齐程度，从而能够反映出材质的**粗糙程度**。n不用说，就是法向量。h 就是半程向量，即 `normalize(l+v)`。这里 $$\alpha$$ 即是 roughness，也正是因为有 roughness 一说，NDF 的存在才有意义。
   
   NDF 不难理解：当我们的视线正好和反射光线相同（即半程向量正好为宏观物体的表面法线），且平面完全光滑时，反射光线不就都射眼睛里了么，产生大片亮斑；反之则啥也看不见（类似于下图左面的球）。但是因为有roughness 的微平面属性存在，半程向量不为宏观物体的表面法线（但和微观的微平面法线相同）时，其实也能看见光！这种关系的描述就是 NDF。
   
-  这个公式有一个很响亮的名字：Trowbridge-Reitz GGX (GGXTR)！NDF 在这里可能是最能够直接感受到光照效果的部分了。
+  NDF 在这里可能是最能够直接感受到光照效果的部分了：
   
   ![](PBR 通俗理解.assets/ndf.png)
   
@@ -111,6 +111,8 @@ $$f_{cook-torrance} = \frac{DFG}{4(\omega_o \cdot n)(\omega_i \cdot n)}$$
   这里 `v` 即视线，`l` 即光线。该式子的取值范围为 [0, 1]，效果如下（理论上 NDF 和这里 G 的 roughness 都应该是一个，但是这里为了演示，固定了 NDF 的 roughness）：
 
   ![](PBR 通俗理解.assets/geometry.png)
+
+  不要小瞧了这一项：如果没有该项，在视线几乎平行于物体平面（掠射）时，由于下面提到的菲涅尔现象，物体边缘会非常的亮（可以带进高光部分公式试一下），显然是不“物理准确”的。
 
 * **F (Fresnel Equation)：菲涅尔方程，反应一个材质反射和折射光线的比率，能够体现材质的金属度**
 
