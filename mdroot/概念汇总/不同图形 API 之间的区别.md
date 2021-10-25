@@ -1,13 +1,13 @@
 # 不同图形 API 之间的区别
 
-本文中将会考虑的API：
+本文中将会考虑的 API：
 
-* OpenGL/GLES/WebGL（下文统称OpenGL）
+* OpenGL/GLES/WebGL（下文统称 OpenGL）
 * Direct3D
 * Metal
 * Vulkan
 
-表格中带“`*`”的字段为非正交字段，可能为其它字段的通俗理解。
+表格中带 `*` 的字段为非正交字段，可能为其它字段的通俗理解。
 
 
 
