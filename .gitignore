@@ -16,4 +16,6 @@ _site
 *.mobi
 *.pdf
 
+!.gitkeep
+
 .DS_Store

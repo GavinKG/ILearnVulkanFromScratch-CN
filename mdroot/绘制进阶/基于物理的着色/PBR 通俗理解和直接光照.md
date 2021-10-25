@@ -24,7 +24,7 @@ $$L_o(p,\omega_o) = \int\limits_{\Omega} f_r(p,\omega_i,\omega_o) L_i(p,\omega_i
 
 本质上是一个一维输入，二维输出函数。输入为入射方向 `wi` ，输出为整个半球的出射方向 `wo` 所对应的辐射比率。当我们固定一个出射方向角时，该函数输出的就是该方向输出的光的能量占输入光能量的比值（取值范围 [0, 1]）。所以可以认为，**BRDF 基于物理定义了一个“材质”**。
 
-![Bi-Directional Reflection Distribution Functions - Chuck Moidel](PBR 通俗理解.assets/image007.jpg)
+![Bi-Directional Reflection Distribution Functions - Chuck Moidel](PBR 通俗理解和直接光照.assets/image007.jpg)
 
 当前已知材质可以被分为两大种：**金属和电介质**，所以我们可以不针对每一种想要数学建模的材质都定义一个独特的 BRDF，而是可以通过输入一些参数来特例化这两大种材质，这些参数就包括：
 
@@ -70,7 +70,7 @@ $$f_r = k_d f_{lambert} +  f_{cook-torrance}$$
 
 那什么是微表面呢？一个物体宏观看起来可能是平滑的，但如果用显微镜仔细看物体的表面，会发现其包含下图这种凹凸不平的、无序（是的，这里仅考虑无序的情况）的细小起伏，这种起伏的法线不同于宏观上物体表面的法线，因此其会把光反射到四面八方，这也是为什么物体能够呈现出粗糙的样子。这种起伏太小了，比渲染时的一个像素还要小，因此我们没必要用三角形面片显式建模出来它，而是把它当成渲染时用到的虚拟材质的一种属性，用统计学的方法来还原这种小起伏对光线传播所造成的影响即可。
 
-![](PBR 通俗理解.assets/microfacet.png)
+![](PBR 通俗理解和直接光照.assets/microfacet.png)
 
 
 
@@ -94,11 +94,11 @@ $$f_{cook-torrance} = \frac{DFG}{4(\omega_o \cdot n)(\omega_i \cdot n)}$$
   
   NDF 在这里可能是最能够直接感受到光照效果的部分了：
   
-  ![](PBR 通俗理解.assets/ndf.png)
+  ![](PBR 通俗理解和直接光照.assets/ndf.png)
   
   顺带说一句，直至今天我依然没找到 GGX 的全称是什么，原始论文中也是为了和 Beckmann 分布比就直接甩出 GGX 三个字母了，不会是滚键盘滚出来的吧？
   
-* **G (Geometry Function)：几何函数，描述微表面的自阴影属性**
+* **G (Geometry Function / Geometric Shadowing)：几何函数，描述微表面的自阴影属性**
 
   **选型：Smith's Schlick-GGX**
 
@@ -106,7 +106,7 @@ $$f_{cook-torrance} = \frac{DFG}{4(\omega_o \cdot n)(\omega_i \cdot n)}$$
 
   当表面足够粗糙时，视线可能因为被遮挡看不到被照到的部分（Geometry Obstruction），光本身也会因为照不到某些地方产生阴影（Geometry Shadowing），如下图所示：
 
-  ![](PBR 通俗理解.assets/geometry_shadowing.png)
+  ![](PBR 通俗理解和直接光照.assets/geometry_shadowing.png)
 
   可见这个 Schlick GGX 公式就是处理这种情况使的。公式接受法线、观察方向和一个 k，输出取值范围 [0, 1]。k其实就是 $$\alpha$$ 的一种变形，本质上还是反应了roughness：
 
@@ -120,9 +120,11 @@ $$f_{cook-torrance} = \frac{DFG}{4(\omega_o \cdot n)(\omega_i \cdot n)}$$
 
   这里 `v` 即视线，`l` 即光线。该式子的取值范围为 [0, 1]，效果如下（理论上 NDF 和这里 G 的 roughness 都应该是一个，但是这里为了演示，固定了 NDF 的 roughness）：
 
-  ![](PBR 通俗理解.assets/geometry.png)
+  ![](PBR 通俗理解和直接光照.assets/geometry.png)
 
   不要小瞧了这一项：如果没有该项，在视线几乎平行于物体平面（掠射）时，由于下面提到的菲涅尔现象，物体边缘会非常的亮（可以带进高光部分公式试一下），显然是不“物理准确”的。
+
+  更严谨地，由于上述在讨论 Geometry Obstruction 的时候并没有考虑光线虽然被遮挡不被看见，但最终会向其他方向射出的行为，因此会导致越粗糙渲染结果越暗这种不能量守恒的结果。此时可以引入 Kulla-Conty 提出的能量补偿项来修正。此处暂时不考虑。
 
 * **F (Fresnel Equation)：菲涅尔方程，反应一个材质反射和折射光线的比率，能够体现材质的金属度**
 
@@ -151,7 +153,7 @@ $$f_{cook-torrance} = \frac{DFG}{4(\omega_o \cdot n)(\omega_i \cdot n)}$$
   
   常见材质的 F0 如下表（截图自 [LearnOpenGL](https://learnopengl-cn.github.io/07%20PBR/01%20Theory/)），看看是不是符合上述物理规则：
   
-  ![F0](PBR 通俗理解.assets/f0.png)
+  ![F0](PBR 通俗理解和直接光照.assets/f0.png)
   
   对于菲涅尔现象，看公式不难看出来，其实就可以用 $$(1 - F_0) ( 1 - (h \cdot v))^5$$ 来近似，再加上基础反射率 F0 即构成了整个 Fresnel-Schlick 近似版本的菲涅尔方程。
   
@@ -326,22 +328,20 @@ void main() {
 
 保姆级 PBR 教程：https://www.cnblogs.com/timlly/p/10631718.html
 
-https://zhuanlan.zhihu.com/p/21489591
+Google Filament：https://google.github.io/filament/Filament.html
 
-https://www.cnblogs.com/TracePlus/p/4141833.html
-
-Epic Games 在 SIGGRAPH 上的 ppt，“万恶之源”：https://cdn2.unrealengine.com/Resources/files/2013SiggraphPresentationsNotes-26915738.pdf
+Epic Games 在 SIGGRAPH 上的 ppt：https://cdn2.unrealengine.com/Resources/files/2013SiggraphPresentationsNotes-26915738.pdf
 
 LearnOpenGL：https://learnopengl.com/PBR/Lighting
 
 SIGGRAPH:
 
-[SIGGRAPH University - Introduction to "Physically Based Shading in Theory and Practice"](https://www.youtube.com/watch?v=j-A0mwsJRmk)
+* [SIGGRAPH University - Introduction to "Physically Based Shading in Theory and Practice"](https://www.youtube.com/watch?v=j-A0mwsJRmk)
 
-[Physically Based Shading in Theory and Practice](https://www.youtube.com/watch?v=zs0oYjwjNEo)
+* [Physically Based Shading in Theory and Practice](https://www.youtube.com/watch?v=zs0oYjwjNEo)
 
 商业引擎/渲染器中实现 PBR 的链接：
 
-https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@11.0/manual/shading-model.html
+* https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@11.0/manual/shading-model.html
 
-https://marmoset.co/posts/physically-based-rendering-and-you-can-too/
+* https://marmoset.co/posts/physically-based-rendering-and-you-can-too/
