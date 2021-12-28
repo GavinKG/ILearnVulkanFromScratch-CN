@@ -2,7 +2,7 @@ Gitbook package does not support newer version of node.js. Here are some workaro
 
 * set node version to: 10.23.0 (use nvm)
 
-  * set nvm mirror to:
+  * (optional) set nvm mirror to taobao:
 
     ```
     node_mirror: https://npm.taobao.org/mirrors/node/
@@ -10,6 +10,12 @@ Gitbook package does not support newer version of node.js. Here are some workaro
     ```
 
 * use gitbook v2.3.2
+
+  ```shell
+  npm install -g gitbook-cli@2.3.2
+  ```
+
+  when using gitbook command for the first time, it will install Gitbook 3.2.3.
 
 * change ~/.gitbook/versions/lib/output/website/copyPluginAssets.js:112 to
 
@@ -27,3 +33,6 @@ Gitbook package does not support newer version of node.js. Here are some workaro
   ```
 
   
+
+Migrating to hexo is considered.
+
