@@ -2,6 +2,13 @@ Gitbook package does not support newer version of node.js. Here are some workaro
 
 * set node version to: 10.23.0 (use nvm)
 
+  * set nvm mirror to:
+
+    ```
+    node_mirror: https://npm.taobao.org/mirrors/node/
+    npm_mirror: https://npm.taobao.org/mirrors/npm/
+    ```
+
 * use gitbook v2.3.2
 
 * change ~/.gitbook/versions/lib/output/website/copyPluginAssets.js:112 to
