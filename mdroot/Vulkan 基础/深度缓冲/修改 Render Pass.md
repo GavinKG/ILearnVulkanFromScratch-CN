@@ -10,7 +10,7 @@ depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
 // 不关心上一次图像的内容，直接清空
 depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 
-// 临时attachment，绘制完了以后就不需要了，所以这里不管
+// 临时attachment，我们这里绘制完了以后就不需要了，所以这里不Store。
 depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 
 // 没用到模板，都不管
