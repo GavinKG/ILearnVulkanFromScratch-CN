@@ -17,21 +17,6 @@ Gitbook package does not support newer version of node.js. Here are some workaro
 
   when using gitbook command for the first time, it will install Gitbook 3.2.3.
 
-* change ~/.gitbook/versions/lib/output/website/copyPluginAssets.js:112 to
-
-  ```js
-  return fs.copyDir(
-          assetsFolder,
-          assetOutputFolder,
-          {
-              deleteFirst: false,
-              overwrite: true,
-              // Edited this line from true to false
-              confirm: false
-          }
-      );
-  ```
-
   
 
 Migrating to hexo is considered.
