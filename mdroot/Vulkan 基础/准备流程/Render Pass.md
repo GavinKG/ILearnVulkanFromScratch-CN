@@ -8,15 +8,18 @@
 
 Render Pass 定义为一个渲染步骤，或者可以理解为一个渲染的大方向，就像一个车间一样。在该步骤中定义了渲染好的东西将会输出到何处，也就是下面的渲染目标 Render Targets，就像一个车间将会把里面的东西输送到一个传送带被打包到同一个集装箱中（举个例子...）。当然怎么样去渲染不归 render pass 管，下一节 pipeline 会提到。例如现在有一个有很多不同材质的球体的场景供渲染，那么这里就可以声明一个 render pass 给所有球用，因为毕竟对于每一个球体，其渲染结果都会输出到同一个 attachment 上，所以流程是一样的。
 
+> Render Pass 这个概念其实是现代图形 API（[Direct3D 12](https://docs.microsoft.com/en-us/windows/win32/direct3d12/direct3d-12-render-passes), Vulkan, [Metal](https://developer.apple.com/documentation/metal/customizing_render_pass_setup)）的概念。在过去，我们只需要将创建好的 Render Targets 绑定到 Pipeline 即可，例如 DX11 的 `OMSetRenderTargets`，或者 OpenGL 的 `glBindFramebuffer` 等。但对于那些支持片上缓存的硬件渲染器（TBDR）来说，它们在使用 Framebuffer 之前可能会先将显存里的纹理加载（Load）到片上缓存空间中，在渲染完毕之后写回（Store）到显存上，这对于使用 TBDR 的移动设备芯片的带宽是有一定挑战的，并且带宽消耗直接反映在发热上。针对这个问题，我们可以在 Render Pass 上指定 Render Target 是否读入/写回显存。对于那些渲染时不需要考虑这个 Render Target 之前结果的情景来说，可以选择不关心（`VK_ATTACHMENT_LOAD_OP_DONT_CARE`）该纹理在显存中的内容；那些渲染后也不需要写回显存的 Render Target（例如一个临时的深度缓存，其只负责辅助当前 Render Pass 进行深度遮挡），也可以设置为 `VK_ATTACHMENT_STORE_OP_DONT_CARE`，在该 Render Pass 结束后，缓存中的内容将可能被丢弃。当然对于那些均为 `DONT_CARE` 的，只会存在于片上缓存的纹理资源来说，可以将其设置为 Transient Attachments（`TRANSIENT_ATTACHMENT_BIT`），这个话题就不放在 Vulkan 基础章节讨论了。
+> 当然，Render Pass 的设计初衷也不仅仅是为了优化 TBDR 的渲染效率。当驱动在渲染前事先知道了 Render Pass 的流程状态，其[可能可以进行一些优化](https://gpuopen.com/learn/vulkan-renderpasses/)。
+
 如果说之前提到的那些准备用的步骤大部分都可以套用于所有程序，那么从这里开始的所有步骤将会根据需要来进行高度定制，甚至在图形引擎中会有一套自动生成这些内容的调度系统。在该教程下，这里将创建一个示例 render pass 供渲染这个三角形。
 
 
 
 ### Attachments
 
-Attachments 即 Render Target，之后直接使用 Vulkan 的叫法了。Attachments 实在不知道怎么翻译的通俗一点，翻译成“资源附件”又太拗口，这里直接用英文。其代表一个渲染步骤最终要输出的地方。*
+Attachments 即 Render Target，之后直接使用 Vulkan 的叫法了。Attachments 实在不知道怎么翻译的通俗一点，翻译成“资源附件”又太拗口，这里直接用英文。其代表一个渲染步骤最终要输出的地方。
 
-首先创建一些 Attachment Description。使用`VkAttachmentDescription `来记录附件的描述信息，包括格式（同SwapChain格式相同），采样数量（这里为1，即不开启多重采样），该附件渲染前后内容（包括颜色深度信息、模板信息）是否保留或清空，渲染前后图像如何布局。Layout 到底是什么后面会提到。
+首先创建一些 Attachment Description。使用 `VkAttachmentDescription` 来记录附件的描述信息，包括格式（同SwapChain格式相同），采样数量（这里为1，即不开启多重采样），该附件渲染前后内容（包括颜色深度信息、模板信息）是否保留或清空，渲染前后图像如何布局。Layout 到底是什么后面会提到。
 
 在这个教程中只需要一个存颜色的 attachment（存颜色的图），定义为 `VkAttachmentDescription colorAttachment`。之后将会用到能够渲染多个 attachments 的 render pass，这种 pass 主要用来实现延迟着色技术（deferred shading / deferred rendering）。
 
