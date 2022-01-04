@@ -1,4 +1,4 @@
-## Uniform Buffer Object
+## Uniform 缓冲 (Uniform Buffer Object)
 
 **原文：https://vulkan-tutorial.com/Uniform_buffers/Descriptor_pool_and_sets。这里我打乱顺序重新组织了一下。**
 
@@ -6,7 +6,9 @@
 
 ### 概念
 
-如上所述，资源描述分为很多种，由于这里要实现三维的变换，需要传入 MVP 矩阵，所以我们需要一种特定的资源描述，叫 Uniform Buffer Object。其对应 Shader 中的 uniform 常量。之所以称之为 Uniform，正是因为这些数据（在没有显式被客户端改变时）在所有使用这些数据的 Shader 实例中都不会改变。
+如上所述，资源描述分为很多种，由于这里要实现三维的变换，需要传入 MVP 矩阵，所以我们需要一种特定的资源描述，叫 Uniform Buffer Object。其对应 Shader 中的 uniform 常量。之所以称之为 Uniform，正是因为这些数据（在没有显式被客户端改变时）**在所有使用这些数据的 Shader 实例中都不会改变，即只读**。
+
+> 与其相对的概念是之前提到过的 SSBO (Shader Storage Buffer Object)，其可以被原子写入。在其他 API、引擎中通常也被称为 UAV。
 
 在 C++ 客户端中，一个我们需要的 UBO 结构体如下所示。注意：glm 代数库中的 `glm::mat4` 类可直接对应上 shader 中 `mat4` 类型，即这两个类型二进制兼容，同时这个结构体满足一样的布局，所以在复制到 buffer 时可以直接用 `memcpy` 函数。
 
@@ -36,7 +38,7 @@ void main() {
 }
 ```
 
-需要注意，在 OpenGL 时代，可以不用 struct，而直接裸用变量（`uniform mat4 proj`），但是在 Vulkan 和 SPIR-V 中必须将 uniform 组合成上面的 “Uniform Block” 结构体。
+需要注意，在 OpenGL 时代，可以不用 "类struct" 格式进行定义，而直接裸用变量（`uniform mat4 proj`），但是在 Vulkan 和 SPIR-V 中必须将 uniform 组合成上面的 [“Uniform Block” 结构体](https://www.khronos.org/opengl/wiki/Interface_Block_(GLSL))。
 
 
 
@@ -128,7 +130,7 @@ std140 的对其规范可以从 OpenGL Programming Guide 中找到（图摘自 O
 
 
 
-### 配额限制
+### 配额限制 (Limits)
 
 虽然本例使用的 UBO 算是相当轻量级的了，但正式工程中在使用 UBO 传数据之前也需要了解一下 UBO 在 Vulkan 规范和系统显卡上的空间/数量配额限制。常用的有下面几个：
 
