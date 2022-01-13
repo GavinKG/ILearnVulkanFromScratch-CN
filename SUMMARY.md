@@ -33,13 +33,13 @@
       
       * [后记](mdroot/Vulkan 基础/准备流程/后记.md)
     * [绘制几何体](mdroot/Vulkan 基础/绘制几何体.md)
-    * [顶点 (Vertex)](mdroot/Vulkan 基础/绘制几何体/顶点.md)
-      
-    * [顶点缓冲 (Vertex Buffer)](mdroot/Vulkan 基础/绘制几何体/顶点缓冲.md)
-      
-    * [Staging Buffer](mdroot/Vulkan 基础/绘制几何体/Staging Buffer.md)
-      
-    * [索引缓冲 (Index Buffer)](mdroot/Vulkan 基础/绘制几何体/索引缓冲.md)
+      * [顶点 (Vertex)](mdroot/Vulkan 基础/绘制几何体/顶点.md)
+    
+      * [顶点缓冲 (Vertex Buffer)](mdroot/Vulkan 基础/绘制几何体/顶点缓冲.md)
+    
+      * [Staging Buffer](mdroot/Vulkan 基础/绘制几何体/Staging Buffer.md)
+    
+      * [索引缓冲 (Index Buffer)](mdroot/Vulkan 基础/绘制几何体/索引缓冲.md)
     * [资源描述与 Uniform 缓冲](mdroot/Vulkan 基础/资源描述与 Uniform 缓冲.md)
       * [资源描述 (Descriptor)](mdroot/Vulkan 基础/资源描述与 Uniform 缓冲/资源描述.md)
         
@@ -58,11 +58,11 @@
       * [纹理坐标](mdroot/Vulkan 基础/图像纹理/纹理坐标.md)
     * [深度缓冲 (Depth Buffering)](mdroot/Vulkan 基础/深度缓冲.md)
       * [深度缓冲图像](mdroot/Vulkan 基础/深度缓冲/深度缓冲图像.md)
-      
+    
       * [修改 Render Pass](mdroot/Vulkan 基础/深度缓冲/修改 Render Pass.md)
-      
+    
       * [帧缓冲](mdroot/Vulkan 基础/深度缓冲/帧缓冲.md)
-      
+    
       * [修改流水线](mdroot/Vulkan 基础/深度缓冲/修改流水线.md)
     * [Mipmapping](mdroot/Vulkan 基础/Mipmaps.md)
       * [简介](mdroot/Vulkan 基础/Mipmaps/简介.md)
@@ -71,7 +71,7 @@
         
       * [配置 mipmaps](mdroot/Vulkan 基础/Mipmaps/配置 mipmaps.md)
     * [多重采样 (Multisampling)](mdroot/Vulkan 基础/多重采样.md)
-      
+    
       * [简介](mdroot/Vulkan 基础/多重采样/简介.md)
         
       * [查询兼容性](mdroot/Vulkan 基础/多重采样/查询兼容性.md)

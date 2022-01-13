@@ -6,13 +6,13 @@
 
 ### 概念
 
-如上所述，资源描述分为很多种，由于这里要实现三维的变换，需要传入 MVP 矩阵，所以我们需要一种特定的资源描述，叫 Uniform Buffer Object。其对应 Shader 中的 uniform 常量。之所以称之为 Uniform，正是因为这些数据（在没有显式被客户端改变时）**在所有使用这些数据的 Shader 实例中都不会改变，即只读**。
+如上所述，资源描述分为很多种，由于这里要实现三维的变换，需要传入 MVP 矩阵，所以我们需要一种特定的资源描述，叫 Uniform Buffer Object，**其对应 Shader 中的 uniform 常量**。之所以称之为 "Uniform"，正是因为这些数据（在没有显式被客户端改变时）**在所有使用这些数据的 Shader 实例中都不会改变，即只读**。
 
 > 与其相对的概念是之前提到过的 SSBO (Shader Storage Buffer Object)，其可以被原子写入。在其他 API、引擎中通常也被称为 UAV。
 
-在 C++ 客户端中，一个我们需要的 UBO 结构体如下所示。注意：glm 代数库中的 `glm::mat4` 类可直接对应上 shader 中 `mat4` 类型，即这两个类型二进制兼容，同时这个结构体满足一样的布局，所以在复制到 buffer 时可以直接用 `memcpy` 函数。
+在 C++ 客户端中，一个我们需要的 UBO 结构体如下所示。注意：glm 代数库中的 `glm::mat4` 类可直接对应上 shader 中 `mat4` 类型，即这两个类型二进制兼容，同时这个结构体满足一样的布局（见下），所以在复制到 buffer 时可以直接用 `memcpy` 函数。
 
-```c++
+```cpp
 struct UniformBufferObject {
     glm::mat4 model;
     glm::mat4 view;
@@ -44,7 +44,7 @@ void main() {
 
 ### 创建 Uniform Buffer
 
-由于其工作需要，每一帧都有可能对其进行数据的改变，就如这里的传递 MVP 的做法一样，所以这里没有必要为其声明 Staging Buffer，而相反，场景中的顶点们一旦声明出来可能会有一段时间不进行修改。
+> 由于我们每一帧都有可能对这个 Uniform Buffer 进行数据的改变，就如这里的传递 MVP 的做法一样，所以这里没有必要为其声明 Staging Buffer，而相反，场景中的顶点们一旦声明出来可能会有一段时间不进行修改。
 
 在该案例中，由于 uniform buffer 需要在 command buffer 中被引用，而 command buffer 数量对应着 swap chain image 的数量，所以这里创建的 uniform buffer 数量与 swap chain image 的数量一致。
 
@@ -72,13 +72,15 @@ for (size_t i = 0; i < swapChainImages.size(); i++) {
 
 ### 更新 Uniform Buffer
 
-这里就要进入到真正的变换运算环节了。首先通过**捕获运行时长**来计算旋转角度，即 `angle = time * anglePerSec`。通过使用标准库中的的高精度时钟`std::chrono::steady_clock`（注意，不要使用教程中使用的 `high_resolution_clock`，因为其可能被 typedef 为 `system_clock`） 并在每次渲染中获取到该帧与**第一帧**的时间差：
+这里就要进入到真正的变换运算环节了。该案例中，首先通过**捕获运行时长**来计算旋转角度，即 `angle = time * anglePerSec`。通过使用标准库中的的高精度时钟`std::chrono::steady_clock`并在每次渲染中获取到该帧与**第一帧**的时间差：
 
 ```cpp
 static auto startTime = std::chrono::steady_clock::now();
 auto currentTime = std::chrono::steady_clock::now();
 float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 ```
+
+> 注意，不要使用教程中使用的 `high_resolution_clock`，因为其可能被 typedef 为 `system_clock`。
 
 接下来开始计算**该案例中**整套变换的 MVP 矩阵：
 
@@ -105,7 +107,7 @@ memcpy(data, &ubo, sizeof(ubo));
 vkUnmapMemory(device, uniformBuffersMemory[currentImage]);
 ```
 
-注意，使用 UBO 来更改每帧都在变化的变换矩阵其实并不是一个最优方法。最好的方法是使用 `push_constants` 来将数据量小但变化频繁的 uniform 变量提交到shader中，例如本例的变换矩阵们。这里的“数据量小”概念可以通过查看实例中的 `VkPhysicalDeviceLimits::maxPushConstantSize` 成员变量值。Vulkan 要求最小值为 128 字节，而当前主流显卡一般也就有其两倍大（本机的 GTX 1070 和 UHD 630 均为256字节）。通过使用 push constants，向 Shader传递内容可以绕过复杂的 buffer 分配环节，**因为 push constants 其实就是流水线的一部分**。
+> 注意，使用 UBO 来更改每帧都在变化的变换矩阵其实并不是一个最优方法。最好的方法是使用 `push_constants` 来将数据量小但变化频繁的 uniform 变量提交到 shader 中，例如本例的变换矩阵们。这里的“数据量小”概念可以通过查看实例中的 `VkPhysicalDeviceLimits::maxPushConstantSize` 成员变量值。Vulkan 要求最小值为 128 字节，而当前主流显卡一般也就有其两倍大（本机的 GTX 1070 和 UHD 630 均为256字节）。通过使用 push constants，向 Shader传递内容可以绕过复杂的 buffer 分配环节，**因为 push constants 其实就是流水线的一部分**。
 
 
 

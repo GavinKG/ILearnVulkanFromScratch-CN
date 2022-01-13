@@ -2,7 +2,9 @@
 
 **原文：https://vulkan-tutorial.com/Drawing_a_triangle/Swap_chain_recreation**
 
-当窗口更改尺寸等操作发生时，swap chain需要被重建来适应新的条件。
+---
+
+当窗口更改尺寸等操作发生时，swap chain 需要被重建来适应新的环境。
 
 ### 重建流程
 
