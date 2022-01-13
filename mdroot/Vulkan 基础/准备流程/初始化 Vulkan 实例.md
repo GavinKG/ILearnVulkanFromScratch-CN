@@ -9,9 +9,11 @@
 
 ### 初始化顺序
 
-一个 Instance 类似于一个 Session（类比一下虚幻引擎的`GameInstance`），在 instance 里处理所有的和 Vulkan 有关的东西。初始化这些东西比较走流程，这里直接列出来吧：
+一个 Instance 类似于一个 Session（类比一下虚幻引擎的`GameInstance`），在 instance 里处理所有的和 Vulkan 有关的东西。
 
-* 添加一个成员变量`VkInstance instance`；
+初始化这些东西比较走流程，这里直接列出来吧：
+
+* 添加一个成员变量 `VkInstance instance`；
 
 * 创建一个 `VkApplicationInfo appInfo` 实例，来告诉 Vulkan程序基本信息，例如版本号，程序名称什么的，当然这些都不是必须的：
 
@@ -26,7 +28,7 @@
   ```
 
 * 由于这里的项目需要 Vulkan 标准里可能不需要的扩展（Extensions），这些功能可能在图形驱动/硬件中实现，也可能不实现，所以需要实现咨询好。同样需要咨询的还有验证层（Validation Layer）。扩展和验证层的概念在下面有记录。
-* 创建`VkInstanceCreateInfo createInfo`，其中包括：
+* 创建 `VkInstanceCreateInfo createInfo`，其中包括：
   * 上述 `appInfo` 结构体
   * 全局 extensions（GLFW提供窗口的extension `glfwGetRequiredInstanceExtensions()`）
   * ValidationLayers
@@ -47,43 +49,43 @@
 ### 代码实现
 
 ```cpp
-    void createInstance() {
-        if (enableValidationLayers && !checkValidationLayerSupport()) {
-            throw std::runtime_error("validation layers requested, but not available!");
-        }
-
-        VkApplicationInfo appInfo = {};
-        appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-        appInfo.pApplicationName = "Hello Triangle";
-        appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-        appInfo.pEngineName = "No Engine";
-        appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-        appInfo.apiVersion = VK_API_VERSION_1_0;
-
-        VkInstanceCreateInfo createInfo = {};
-        createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-        createInfo.pApplicationInfo = &appInfo;
-
-        auto extensions = getRequiredExtensions();
-        createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
-        createInfo.ppEnabledExtensionNames = extensions.data();
-
-        VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;
-        if (enableValidationLayers) {
-            createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-            createInfo.ppEnabledLayerNames = validationLayers.data();
-
-            populateDebugMessengerCreateInfo(debugCreateInfo);
-            createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*)&debugCreateInfo;
-        } else {
-            createInfo.enabledLayerCount = 0;
-
-            createInfo.pNext = nullptr;
-        }
-
-        if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create instance!");
-        }
+void createInstance() {
+    if (enableValidationLayers && !checkValidationLayerSupport()) {
+        throw std::runtime_error("validation layers requested, but not available!");
     }
+
+    VkApplicationInfo appInfo = {};
+    appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+    appInfo.pApplicationName = "Hello Triangle";
+    appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
+    appInfo.pEngineName = "No Engine";
+    appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
+    appInfo.apiVersion = VK_API_VERSION_1_0;
+
+    VkInstanceCreateInfo createInfo = {};
+    createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+    createInfo.pApplicationInfo = &appInfo;
+
+    auto extensions = getRequiredExtensions();
+    createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
+    createInfo.ppEnabledExtensionNames = extensions.data();
+
+    VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;
+    if (enableValidationLayers) {
+        createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
+        createInfo.ppEnabledLayerNames = validationLayers.data();
+
+        populateDebugMessengerCreateInfo(debugCreateInfo);
+        createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*)&debugCreateInfo;
+    } else {
+        createInfo.enabledLayerCount = 0;
+
+        createInfo.pNext = nullptr;
+    }
+
+    if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create instance!");
+    }
+}
 ```
 

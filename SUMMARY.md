@@ -17,7 +17,7 @@
       
       * [交换链 (Swap Chain)](mdroot/Vulkan 基础/准备流程/Swap Chain.md)
       
-      * [创建 Image View](mdroot/Vulkan 基础/准备流程/创建 Image View.md)
+      * [创建图像视图 (Image View)](mdroot/Vulkan 基础/准备流程/创建 Image View.md)
       
       * [Render Pass](mdroot/Vulkan 基础/准备流程/Render Pass.md)
       
@@ -33,14 +33,13 @@
       
       * [后记](mdroot/Vulkan 基础/准备流程/后记.md)
     * [绘制几何体](mdroot/Vulkan 基础/绘制几何体.md)
-    
-      * [顶点 (Vertex)](mdroot/Vulkan 基础/绘制几何体/顶点.md)
-    
-      * [顶点缓冲 (Vertex Buffer)](mdroot/Vulkan 基础/绘制几何体/顶点缓冲.md)
-    
-      * [Staging Buffer](mdroot/Vulkan 基础/绘制几何体/Staging Buffer.md)
-    
-      * [索引缓冲 (Index Buffer)](mdroot/Vulkan 基础/绘制几何体/索引缓冲.md)
+    * [顶点 (Vertex)](mdroot/Vulkan 基础/绘制几何体/顶点.md)
+      
+    * [顶点缓冲 (Vertex Buffer)](mdroot/Vulkan 基础/绘制几何体/顶点缓冲.md)
+      
+    * [Staging Buffer](mdroot/Vulkan 基础/绘制几何体/Staging Buffer.md)
+      
+    * [索引缓冲 (Index Buffer)](mdroot/Vulkan 基础/绘制几何体/索引缓冲.md)
     * [资源描述与 Uniform 缓冲](mdroot/Vulkan 基础/资源描述与 Uniform 缓冲.md)
       * [资源描述 (Descriptor)](mdroot/Vulkan 基础/资源描述与 Uniform 缓冲/资源描述.md)
         

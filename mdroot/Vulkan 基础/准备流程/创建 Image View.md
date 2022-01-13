@@ -1,14 +1,16 @@
-## 创建 Image View
+## 创建图像视图 (Image View)
 
 **原文：https://vulkan-tutorial.com/Drawing_a_triangle/Presentation/Image_views**
 
 流程方法名：`createImageViews()`
 
+---
+
 创建好 Swap Chain 之后，我们需要把这个队列中的每一个 Image 生成一个 Image View。
 
-`VkImageView` 可以理解为一个看 `VkImage` 的途径，包括看待方法（1D/2D/3D/CubeMap），ARGB通道等。其同时也是存放一个 Texture 的重要工具。在 **概念汇总**一章有其详细的定义。
+`VkImageView` 称之为一个“图像视图”，可以理解为一个看 `VkImage` 的途径，包括看待方法（1D/2D/3D/CubeMap），ARGB通道等。其同时也是存放一个 Texture 的重要工具。在 **概念汇总** 一章有其详细的定义。
 
-在这里我们添加成员变量`std::vector<VkImageView> swapChainImageViews`并 resize 成 `swapChainImages` 的大小。对每一个在列表里的`VkImage`，配置`VkImageViewCreateInfo ` 并传入一系列格式配置参数，并调用 `vkCreateImageView`获取`VkImageView`，很简单。需要注意，ImageView需要调用 `vkDestroyImageView` 方法手动销毁。
+在这里我们添加成员变量 `std::vector<VkImageView> swapChainImageViews`并 resize 成 `swapChainImages` 的大小。对每一个在列表里的`VkImage`，配置 `VkImageViewCreateInfo ` 并传入一系列格式配置参数，并调用 `vkCreateImageView` 获取 `VkImageView`，很简单。同样需要注意，ImageView 需要调用 `vkDestroyImageView` 方法手动销毁。
 
 其实 Vulkan 什么销毁什么不销毁满足 C++ 哲学：谁创建并拥有 (own) 的东西谁来给销毁。因为 `VkImage` 是 Vulkan 在生成 Swap Chain 时自动创建的，而 `VkImageView` 是用户手动创建的，所以前者不用管但是要销毁后者。
 
