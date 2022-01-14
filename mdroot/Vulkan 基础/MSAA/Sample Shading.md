@@ -47,3 +47,5 @@ void createGraphicsPipeline() {
 当然，一个像素执行多个 Fragment Shader 的大前提是我们开启了多重采样的流水线，否则只会调用一次 Fragment Shader，且 `gl_SamplePosition` 的值恒定为 `0.5, 0.5`。
 
 详细解释可以参考 Vulkan Spec：https://www.khronos.org/registry/vulkan/specs/1.2-extensions/html/vkspec.html#primsrast-sampleshading
+
+> 使用 MSAA + Sample Shading 并把多重采样操作从一帧分摊到多帧，即构成了 TAA 的雏形。
