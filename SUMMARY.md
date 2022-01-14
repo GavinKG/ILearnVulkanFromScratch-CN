@@ -58,29 +58,15 @@
       * [纹理坐标](mdroot/Vulkan 基础/图像纹理/纹理坐标.md)
     * [深度缓冲 (Depth Buffering)](mdroot/Vulkan 基础/深度缓冲.md)
       * [深度缓冲图像](mdroot/Vulkan 基础/深度缓冲/深度缓冲图像.md)
-    
-      * [修改 Render Pass](mdroot/Vulkan 基础/深度缓冲/修改 Render Pass.md)
-    
-      * [帧缓冲](mdroot/Vulkan 基础/深度缓冲/帧缓冲.md)
-    
-      * [修改流水线](mdroot/Vulkan 基础/深度缓冲/修改流水线.md)
+      * [应用深度传冲](mdroot/Vulkan 基础/深度缓冲/应用深度传冲.md)
     * [Mipmapping](mdroot/Vulkan 基础/Mipmaps.md)
-      * [简介](mdroot/Vulkan 基础/Mipmaps/简介.md)
-        
-      * [创建 image](mdroot/Vulkan 基础/Mipmaps/创建 image.md)
-        
+      * [创建带有 Mipmaps 的图像](mdroot/Vulkan 基础/Mipmaps/创建 image.md)
+      
       * [配置 mipmaps](mdroot/Vulkan 基础/Mipmaps/配置 mipmaps.md)
-    * [多重采样 (Multisampling)](mdroot/Vulkan 基础/多重采样.md)
-    
-      * [简介](mdroot/Vulkan 基础/多重采样/简介.md)
-        
-      * [查询兼容性](mdroot/Vulkan 基础/多重采样/查询兼容性.md)
-        
-      * [离线渲染 Render Target](mdroot/Vulkan 基础/多重采样/离线渲染 Render Target.md)
-        
-      * [修改流程](mdroot/Vulkan 基础/多重采样/修改流程.md)
-        
-      * [附加：Sample Shading](mdroot/Vulkan 基础/多重采样/附加：Sample Shading.md)
+    * [多重采样抗锯齿 (MSAA)](mdroot/Vulkan 基础/MSAA.md)
+      * [更新流程](mdroot/Vulkan 基础/MSAA/修改流程.md)
+      
+      * [Sample Shading 消除着色锯齿](mdroot/Vulkan 基础/MSAA/Sample Shading.md)
     * [后记](mdroot/Vulkan 基础/后记.md)
 * [Vulkan 进阶](mdroot/Vulkan 进阶.md)
   * [流水线复用/缓存](mdroot/Vulkan 进阶/流水线复用.md)
@@ -165,7 +151,6 @@
   
     * [基于 Compute 的光线追踪](mdroot/Vulkan 进阶/Compute Shader/光线追踪.md)
     * [Compute Shader 简单实现](mdroot/Vulkan 进阶/Compute Shader/光线追踪/Compute Shader 简单实现.md)
-  
 * [绘制进阶](mdroot/绘制进阶.md)
   * [光照](mdroot/绘制进阶/光照.md)
     

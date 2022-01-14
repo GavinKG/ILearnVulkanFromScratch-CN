@@ -1,14 +1,20 @@
 ## 配置 mipmaps
 
+上一节讲了 Mipmaps 的原理和使用方法，这一节主要讲一下 Mipmaps 怎样运行时生成。
+
+
+
 ### Bit Block Transfer (blit) 操作介绍
 
-blit 操作本质上是一个图像合并转移操作。这个操作接受一个原图作为输入，接受一个可选的图作为遮罩，通过使用布尔操作（boolean op）输出一个操作后的图。这种方法被经常用来处理后期特效，在一个特效阶段（以原始画面作为texture 输入到 fragment shader，执行一个或几个pass）算出一张效果叠加图后将其混合到当前 Render Target 中形成一个加了特效后的画面。当然，这个遮罩图，即参与布尔操作的另一张图是可选的，而在原图转移到目标图时也可以进行缩放，使用滤波等，因此其也可以用来生成 mipmaps。
+blit 操作本质上是一个图像合并转移操作。**这个操作接受一个原图作为输入，接受一个可选的图作为遮罩，通过使用布尔操作（boolean op）输出一个操作后的图像**。这种方法被经常用来处理后期特效，在一个特效阶段（以原始画面作为texture 输入到 fragment shader，执行一个或几个pass）算出一张效果叠加图后将其混合到当前 Render Target 中形成一个加了特效后的画面。当然，这个遮罩图，即参与布尔操作的另一张图是可选的，而在原图转移到目标图时也可以进行缩放，使用滤波等，**因此其也可以用来生成 mipmaps**。
+
+
 
 ### 生成 mipmaps
 
 在真正生成之前，要先将原始创建纹理的 `usageFlag` 加上 `VK_IMAGE_USAGE_TRANSFER_SRC_BIT`，即 src + dst + sampled。
 
-同时，接下来的blit操作需要image的格式支持 linear filtering（参考下文 sampler），而不是所有平台都支持。所以在一开始我们会使用`vkGetPhysicalDeviceFormatProperties`拿到设备格式属性`VkFormatProperties formatProperties`，并对其进行检查：
+同时，接下来的 blit 操作需要 image 的格式支持 linear filtering（参考下文 sampler），但这个特性不是所有平台都支持。所以在一开始我们会使用`vkGetPhysicalDeviceFormatProperties`拿到设备格式属性`VkFormatProperties formatProperties`，并对其进行检查：
 
 ```c++
 if (!(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT)) {
@@ -16,32 +22,38 @@ if (!(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_F
 }
 ```
 
-下面是生成 Mipmaps 的步骤：
+下面是生成 Mipmaps 的**大致步骤**：
 
-1. 检查传入的图像是否支持线性blit，不支持抛出异常。
-2. 开始循环，循环次数为 `mipLevels`
+---
+
+1. 检查传入的图像是否支持线性 blit，不支持抛出异常。
+2. 开始循环，循环次数为 `mipLevels`：
 3. 设置 barrier，用于将 blit 之后的 `DST_OPTIMAL` 布局转换成 `SRC_OPTIMAL`  供下一次转换：
    - `subresourceRange.baseMipLevel`：基于哪个mipmap，这里使用 `i-1`，即上一个mipmap，或第一次循环时为原始图像
    - Layout：`VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL` -> `VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL`
    - Access Mask：`VK_ACCESS_TRANSFER_WRITE_BIT` -> `VK_ACCESS_TRANSFER_READ_BIT`
-
 4. 提交 barrier，源和目标 Stage 都使用 `VK_PIPELINE_STAGE_TRANSFER_BIT`
 5. 设置 `VkImageBlit`：
    * mipLevel：`i-1` -> `i`，即将 i-1 的mipmap blit 到 i 的mipmap
    * offset[1]：`{mipWidth, mipHeight, 1}` -> `mipWidth>1?mipWidth/2:1, mipHeight>1?mipHeight/2:1,1`，即将新 mipmap 的长宽都缩减到一半。
-6. 使用 `vkCmdBlitImage` 提交 VkImageBlit：
+6. 使用 [`vkCmdBlitImage`](https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/vkCmdBlitImage.html) 提交 VkImageBlit：
    * `srcImage` 和 `dstImage`：这里均为需要生成mipmaps的image
    * Layout：`VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL` -> `VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL`
 7. 由于`i-1`的图已经用完了，所以可以将其改为 shader ready 了。更改一下上述 barrier 的属性，将 layout 从 `VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL` 转换到 `VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL`，并再次提交，其中 stage 为 `VK_PIPELINE_STAGE_TRANSFER_BIT` -> `VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT`，即为 shader 读取做准备。
 8. `mipWidth` 和 `mipHeight` 均除以2，重复循环(2.)
-
 9. 不要忘了最后一张图还没有转换成 shader ready 的 layout 呢。开一个 barrier 转换过去。
+
+---
 
 上述即为整套生成一个 Image 的 mipmap 的流程。在生成纹理之后调用上述方法即可创建出一个带有 Mipmaps 的纹理。
 
+// TODO有了具体实现步骤以后，下面直接看代码：
+
+
+
 ### 配置采样器
 
-图片配置好了，接下来轮到配置采样器来定义如何看代一张图片了。下面有一个很好的伪代码讲解如何看代mipmaps的使用：
+图片配置好了，接下来轮到配置采样器来定义如何看代一张图片了。下面有一个很好的**伪代码**讲解如何看代mipmaps的使用：
 
 ```c++
 void sample() {
