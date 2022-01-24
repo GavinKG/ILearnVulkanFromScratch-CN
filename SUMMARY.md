@@ -27,7 +27,7 @@
       
       * [指令缓冲 (Command Buffer)](mdroot/Vulkan 基础/准备流程/指令缓冲.md)
       
-      * [渲染流程](mdroot/Vulkan 基础/准备流程/渲染流程.md)
+      * [同步渲染流程 (Synchronization)](mdroot/Vulkan 基础/准备流程/渲染流程.md)
       
       * [重建 Swap Chain](mdroot/Vulkan 基础/准备流程/重建 Swap Chain.md)
       
@@ -67,7 +67,7 @@
       * [更新流程](mdroot/Vulkan 基础/MSAA/修改流程.md)
       
       * [Sample Shading 消除着色锯齿](mdroot/Vulkan 基础/MSAA/Sample Shading.md)
-    * [后记](mdroot/Vulkan 基础/后记.md)
+    * [后记 & 代码实现](mdroot/Vulkan 基础/后记.md)
 * [Vulkan 进阶](mdroot/Vulkan 进阶.md)
   * [流水线复用/缓存](mdroot/Vulkan 进阶/流水线复用.md)
     * [派生流水线](mdroot/Vulkan 进阶/流水线复用/派生流水线.md)
