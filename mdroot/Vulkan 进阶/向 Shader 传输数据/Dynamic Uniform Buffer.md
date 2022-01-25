@@ -2,13 +2,21 @@
 
 https://github.com/SaschaWillems/Vulkan/tree/master/examples/dynamicuniformbuffer
 
-
-
 > A *dynamic uniform buffer* (`VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC`) is almost identical to a [uniform buffer](https://www.khronos.org/registry/vulkan/specs/1.2-extensions/html/vkspec.html#descriptorsets-uniformbuffer), and differs only in how the offset into the buffer is specified. The base offset calculated by the [VkDescriptorBufferInfo](https://www.khronos.org/registry/vulkan/specs/1.2-extensions/html/vkspec.html#VkDescriptorBufferInfo) when initially [updating the descriptor set](https://www.khronos.org/registry/vulkan/specs/1.2-extensions/html/vkspec.html#descriptorsets-updates) is added to a [dynamic offset](https://www.khronos.org/registry/vulkan/specs/1.2-extensions/html/vkspec.html#descriptorsets-binding-dynamicoffsets) when binding the descriptor set.
+
+
 
 之前在创建 UBO 的时候，每一个物体（当然之前的案例中不会超过两个物体……）都手动分配了一个 UBO 和关联的内存。这种方法简单直接，但是当物体多的时候，我们可以选择**建立一个大的 Uniform Buffer 缓冲存尽可能多的数据**，每一个 draw call 传入这个**大集合的一部分（通过偏移值）**，作为绘制物体真正的 Uniform Buffer。**这个“大集合”即 Dynamic Uniform Buffer**。
 
-但需要注意的是，Dynamic Uniform Buffer 也是有分配限制的（笑），Vulkan 官方规定这个分配限制必须 >= 8，在笔者的机器上测得的是 `maxDescriptorSetUniformBuffersDynamic = 15`。
+试想一下，如果每个物体都用一个独立的 Uniform Buffer 句柄，那么我们也不得不给每一个物体同时创建一个独立的 Descriptor Set 来保证绘制的并行性。而使用 `vkCmdBindDescriptorSets` 也是有成本的，这里的 Dynamic Descriptor 就是力争干掉这个调用，减少上下文切换压力，让多个 `vmCmdDraw` 能够
+
+> 更新 Buffer 和执行使用此 Buffer 的绘制指令是不能穿插调用的，因为调用 `vkCmd` 进行绘制的时候，绘制操作并没有真正进行，只是录入到了 Command Buffer 中而已；如果想要同步则只能使用 `vkQueueSubmit` 配合上 Fence，这将会极大程度上降低并行性，完全不可取。
+
+在 Sascha Willems 的案例中，我们一次渲染多个物体，即我们需要多个 Model Matrix，而 VP 矩阵由于属于“摄像机”的属性，我们只需要一份。此时，比起每一个物体分配一个 Uniform Buffer 只存储一个 M 矩阵的方案来说，我们可以**开一个大的 Dynamic Uniform Buffer 连续存储所有 M 矩阵**，在绘制每个物体时的 `vkCmdBindDescriptorSets` 中给这个大 Buffer 设置偏移值，从而使 Shader 中取到的矩阵（`mat4`）为对应物体的数据。
+
+> 在 Vulkan 中，能开一个大的 Buffer 容纳所有的数据，就不开碎片化的小 Buffer，Buffer 的内存分配也是如此（例如使用之前提到过的 Vulkan Memory Allocator）。
+>
+> 但需要注意的是，整个 Pipeline Layout 中 Dynamic Uniform Buffer [也是有数量限制的](https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkPhysicalDeviceLimits.html)。Vulkan 官方规定这个分配限制必须 >= 8，在笔者的机器上测得的是 `maxDescriptorSetUniformBuffersDynamic = 16`。
 
 
 
@@ -62,7 +70,7 @@ layout (binding = 1) uniform UboInstance
 
 设置 descriptor sets 还是要走三部曲：
 
-* Descriptor Pool：这里为所有物体生成**一个**类型为`VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC`的 pool size。
+* Descriptor Pool：这里**为所有物体生成一个**类型为`VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC`的 pool size。
 * Descriptor Set Layout：在 Binding 中添加一个绑定在 `VK_SHADER_STAGE_VERTEX_BIT` 上的 `VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC`。
 * Descriptor Set 的具体关联缓存和绑定环节：在创建完 `descriptorSet` 后写入时，`VkWriteDescriptorSet` 中的 `descriptorType` 同样要指定为 `VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC`。
 
@@ -70,15 +78,27 @@ layout (binding = 1) uniform UboInstance
 
 ### 绘制命令
 
-**终于到了能体现出 Dynamic Uniform Buffer 作用的时候了！**在 command buffer 绘制中的 `vkCmdBindDescriptorSets` 函数的最后两个参数适合 Dynamic Uniform Buffer 有关的：
+**终于到了能体现出 Dynamic Uniform Buffer 作用的时候了！**在 Command Buffer 绘制中的 `vkCmdBindDescriptorSets` 函数的最后两个参数是和 Dynamic Uniform Buffer 有关的：
 
-* `dynamicOffsetCount`：set 中有几个 dynamic descriptor？同时也是下一个数组的大小。
-* `pDynamicOffsets`：具体 `uint32_t` 偏移量。这个 offset 只会影响 descriptor set 中声明为 dynamic uniform buffer 和 storage buffer 的 descriptor。这个数组对应的 dynamic descriptor 按照 `binding` 号顺序排列。
+```cpp
+VKAPI_ATTR void VKAPI_CALL vkCmdBindDescriptorSets(
+    VkCommandBuffer                             commandBuffer,
+    VkPipelineBindPoint                         pipelineBindPoint,
+    VkPipelineLayout                            layout,
+    uint32_t                                    firstSet,
+    uint32_t                                    descriptorSetCount,
+    const VkDescriptorSet*                      pDescriptorSets,
+    uint32_t                                    dynamicOffsetCount, // !
+    const uint32_t*                             pDynamicOffsets);   // !
+```
 
-> If any of the sets being bound include dynamic uniform or storage buffers, then `pDynamicOffsets` includes one element for each array element in each dynamic descriptor type binding in each set. Values are taken from `pDynamicOffsets` in an order such that all entries for set N come before set N+1; within a set, entries are ordered by the binding numbers in the descriptor set layouts; and within a binding array, elements are in order. `dynamicOffsetCount` **must** equal the total number of dynamic descriptors in the sets being bound.
+* `dynamicOffsetCount`：Descriptor Set 中有几个 Dynamic Descriptor？同时也是下一个数组的 `pDynamicOffsets` 的大小。
+* `pDynamicOffsets`：具体 `uint32_t` 偏移量数组。**这个 offset 只会影响 Descriptor Set 中声明为 Dynamic Uniform Buffer 和 Storage Buffer 的 Descriptor。**这个数组对应的 dynamic descriptor 按照 `binding` 号顺序排列。
+
+例如，我的 Descriptor Set 中含有 3 个 Descriptor，分别为 Dynamic UBO, UBO, Dynamic UBO，Binding ID 为 0, 1, 2，那么 `dynamicOffsetCount` 就是 2，`pDynamicOffsets` 的值就是第一个和第三个 Descriptor 的 Offset。
 
 
 
 ### 更改 Dynamic Uniform Buffer 中的内容
 
-更改的方法和上面介绍的类似，都是先 `vkMapMemory` ，再 `memcpy`，在 `vkUnmapMemory`。但是由于没有声明 `VK_MEMORY_PROPERTY_HOST_COHERENT_BIT` ，所以得手动保持数据的同步（coherent）。在 unmap 之前使用 `vkFlushMappedMemoryRanges` 提交想要改变的 DUB 中的内容。
+更改的方法和上面介绍的类似，都是先 `vkMapMemory` ，再 `memcpy`，在 `vkUnmapMemory`。但是由于没有声明 `VK_MEMORY_PROPERTY_HOST_COHERENT_BIT` ，所以得手动保持数据的同步（coherent）。在 unmap 之前使用 `vkFlushMappedMemoryRanges` 提交想要改变的 Dynamic Uniform Buffer 中的内容。

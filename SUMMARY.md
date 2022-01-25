@@ -19,7 +19,7 @@
       
       * [创建图像视图 (Image View)](mdroot/Vulkan 基础/准备流程/创建 Image View.md)
       
-      * [Render Pass](mdroot/Vulkan 基础/准备流程/Render Pass.md)
+      * [Render Pass 和 Attachments](mdroot/Vulkan 基础/准备流程/Render Pass.md)
       
       * [图形流水线 (Graphics Pipeline)](mdroot/Vulkan 基础/准备流程/图形流水线.md)
       
@@ -62,7 +62,7 @@
     * [Mipmapping](mdroot/Vulkan 基础/Mipmaps.md)
       * [创建带有 Mipmaps 的图像](mdroot/Vulkan 基础/Mipmaps/创建 image.md)
       
-      * [配置 mipmaps](mdroot/Vulkan 基础/Mipmaps/配置 mipmaps.md)
+      * [配置 Mipmaps](mdroot/Vulkan 基础/Mipmaps/配置 mipmaps.md)
     * [多重采样抗锯齿 (MSAA)](mdroot/Vulkan 基础/MSAA.md)
       * [更新流程](mdroot/Vulkan 基础/MSAA/修改流程.md)
       
@@ -183,31 +183,13 @@
       * [级联阴影映射](mdroot/绘制进阶/阴影/级联阴影映射.md)
     * [骨骼动画](mdroot/绘制进阶/骨骼动画.md)
 * [概念汇总](mdroot/概念汇总.md)
-
     * [设备与逻辑设备 Physical / Logical Device](mdroot/概念汇总/设备与逻辑设备.md)
-
     * [缓冲与图像 Buffer & Image](mdroot/概念汇总/缓冲与图像.md)
-
     * [图像布局和排列 Image Layout & Tiling](mdroot/概念汇总/图像布局和排列.md)
-
-    * [指令缓冲 Command Buffer](mdroot/概念汇总/指令缓冲.md)
-
     * [表面 Surface](mdroot/概念汇总/表面.md)
-
     * [交换链 Swap Chain](mdroot/概念汇总/交换链.md)
-
     * [渲染流程和渲染目标 Render Pass & Attachment](mdroot/概念汇总/渲染流程和渲染目标.md)
-
-    * [帧缓冲 Framebuffer](mdroot/概念汇总/帧缓冲.md)
-
     * [队列 Queue](mdroot/概念汇总/队列.md)
-
-    * [视图 View](mdroot/概念汇总/视图.md)
-
-    * [资源描述符集 Descriptor Set](mdroot/概念汇总/资源描述符集.md)
-
     * [同步 synchronization](mdroot/概念汇总/同步.md)
-
     * [Shader 的数据流向](mdroot/概念汇总/Shader 的数据流向.md)
-
     * [不同图形 API 之间的区别](mdroot/概念汇总/不同图形 API 之间的区别.md)

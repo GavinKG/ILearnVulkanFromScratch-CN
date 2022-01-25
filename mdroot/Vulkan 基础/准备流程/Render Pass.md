@@ -1,10 +1,12 @@
-## Render Pass
+## Render Pass 和 Attachments
 
 原文：**https://vulkan-tutorial.com/Drawing_a_triangle/Graphics_pipeline_basics/Render_passes**
 
 流程方法名：`createRenderPass()`
 
----
+
+
+### 介绍
 
 **Render Pass 定义为一个渲染步骤**，或者可以理解为一个渲染的大方向，就像一个车间一样。在该步骤中定义了渲染好的东西将会输出到何处，也就是下面的渲染目标 Render Targets，就像一个车间将会把里面的东西输送到一个传送带被打包到同一个集装箱中一样。**当然具体怎么去渲染不归 render pass 管**，下一节 pipeline 会提到。例如现在有一个有很多不同材质的球体的场景供渲染，那么这里就可以声明一个 Render Pass 负责统筹所有球的绘制命令，因为毕竟对于每一个球体，其渲染结果都会输出到同一个 attachment 上，所以流程是一样的。
 
@@ -19,11 +21,27 @@
 
 ### Attachments
 
-Attachments 可以理解为一个具体 Render Target 的句柄（handle），**其代表一个渲染步骤最终要输出的地方**。我们在定义一个 Render Pass 的时候首先要告诉 Vulkan 我们要渲染到哪里。
+Attachments（又称 Render Targets），**其代表一个渲染步骤的渲染目标**。一般我们需要一个颜色 Attachment 存放输出的颜色，有时候会需要一个 Depth/Stencil Attachment 存放深度，在一些情况下我们需要多张颜色 Attachment，供一个 Render Pass 同时输出。
 
-首先创建一些 Attachment Description。使用 `VkAttachmentDescription` 来记录 attachment 的描述信息，包括格式（同 Swap Chain 格式相同），采样数量（这里为 1，即不开启多重采样），该附件渲染前后内容（包括颜色深度信息、模板信息）是否保留或清空，渲染前后图像如何布局。这些概念到底是什么后面会提到，这里先一起走个流程。
+> OpenGL / Vulkan 中称其为 Attachments，而在 DirectX 的世界中称其为 Render Targets，Metal 中倒是两种说法都出现了……
+
+此处，我们首先要创建一些 Attachment Description，用来**首先描述这些渲染目标**，但不真正指定其使用的具体资源。使用 `VkAttachmentDescription` 来记录 attachment 的描述信息，包括格式（同 Swap Chain 格式相同），采样数量（这里为 1，即不开启多重采样），该附件渲染前后内容（包括颜色深度信息、模板信息）是否保留或清空，渲染前后图像如何布局。这些概念到底是什么后面会提到，这里先一起走个流程。
 
 在这个教程中只需要一个存颜色的 Color Attachment，我们将其定义为一个成员变量 `VkAttachmentDescription colorAttachment`。之后将会用到能够渲染多个 Attachments 的 Render Pass。
+
+```cpp
+typedef struct VkAttachmentDescription {
+    VkAttachmentDescriptionFlags    flags;
+    VkFormat                        format;
+    VkSampleCountFlagBits           samples;
+    VkAttachmentLoadOp              loadOp;
+    VkAttachmentStoreOp             storeOp;
+    VkAttachmentLoadOp              stencilLoadOp;
+    VkAttachmentStoreOp             stencilStoreOp;
+    VkImageLayout                   initialLayout;
+    VkImageLayout                   finalLayout;
+} VkAttachmentDescription;
+```
 
 
 
@@ -31,11 +49,33 @@ Attachments 可以理解为一个具体 Render Target 的句柄（handle），**
 
 **一个 Render Pass 可以有多个 subpass 存在，即一个“子渲染流程”。**例如，每一个后处理特效需要读取前一个特效的 attachment，所以跑完所有特效就会有一系列的 pass。如果这个特效着色的时候**只用到了上一个特效的对应像素**，则可以把它们设置为 subpass 并且打包成一个大的 pass。想象两个车间和其中的流水线（对于屏幕空间后处理特效来说，一个车间只有一条流水线，即把之前的图像拿过来，处理完了直接输出），如果下一个车间的所有流水线只用到上面的一个与其对应位置的流水线的产物，那为何不把这两个车间直接对接起来，让后一个车间的流水线拼到前一个车间流水线上，从而避免物品集散的时间损失。
 
-> 对于一些实现了 Tile-based renderer 并且带宽小的 GPU（通常为移动GPU）来说，其下一个 subpass 将直接从 tiled memory 上读取数据而不需要从显存中读取数据，节省带宽。对于桌面 GPU 来说，由于其使用了 IMR 架构，可能用 subpass 和直接用多个 pass 的性能是差不多的。
+> 对于一些实现了 Tile-based renderer 并且带宽小的 GPU（通常为移动GPU）来说，其下一个 subpass 将直接从 tiled memory 上读取数据而不需要从显存中读取数据，节省带宽。对于桌面 GPU 来说，由于其使用了 IMR 架构，数据交换都会经由显存，并且带宽速度快，可能用 subpass 和直接用多个 pass 的性能是差不多的。
 
-每一个 subpass都会引用一个 attachment，通过填写 `VkAttachmentReference colorAttachmentRef` 来设置，其中包括使用的 attachment 的编号和其布局（这里使用`VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL` ）。**这个编号和 Fragment Shader 中的 layout 是对应的。例如我在 shader 里面有 `layout(location = 0) out vec4 outColor`，那么这里的 color attachment 的`colorAttachmentRef.attachment` 就要为 0。**
+每一个 subpass 都会引用一个 attachment，通过填写 `VkAttachmentReference colorAttachmentRef` 来设置，其中包括使用的 attachment 的编号和其布局（这里使用`VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL` ）。**这个编号和 Fragment Shader 中的 layout 是对应的。例如我在 shader 里面有 `layout(location = 0) out vec4 outColor`，那么这里的 color attachment 的`colorAttachmentRef.attachment` 就要为 0。**
+
+```cpp
+typedef struct VkAttachmentReference {
+    uint32_t         attachment;
+    VkImageLayout    layout;
+} VkAttachmentReference;
+```
 
 现在开始对子 pass 进行描述：使用`VkSubpassDescription `，包括子 pass 在流水线中的绑定点（这里是`VK_PIPELINE_BIND_POINT_GRAPHICS`，将来可以支持通用计算），颜色资源附件的个数和指针引用（这个例子中只设置了一个颜色资源附件，即为上述`colorAttachmentRef`，所以直接传该实例的指针就行）
+
+```cpp
+typedef struct VkSubpassDescription {
+    VkSubpassDescriptionFlags       flags;
+    VkPipelineBindPoint             pipelineBindPoint;
+    uint32_t                        inputAttachmentCount;
+    const VkAttachmentReference*    pInputAttachments;
+    uint32_t                        colorAttachmentCount;
+    const VkAttachmentReference*    pColorAttachments;
+    const VkAttachmentReference*    pResolveAttachments;
+    const VkAttachmentReference*    pDepthStencilAttachment;
+    uint32_t                        preserveAttachmentCount;
+    const uint32_t*                 pPreserveAttachments;
+} VkSubpassDescription;
+```
 
 
 
@@ -52,6 +92,18 @@ Attachments 可以理解为一个具体 Render Target 的句柄（handle），**
   注意：`srcSubpass`值必须低于 `dstSubpass`，否则subpass的依赖图便存在环了
 - `dstStageMask`和`dstAccessMask`：告诉subpass在`dstAccessMask`的access操作到来的时候需要等待的`dstStageMask`阶段。这里我们需要在`VK_ACCESS_COLOR_ATTACHMENT_READ_BIT `和（按位或）`VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT`（读写颜色Image）时等待颜色输出阶段，即上述提到的`VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT`
 
+```cpp
+typedef struct VkSubpassDependency {
+    uint32_t                srcSubpass;
+    uint32_t                dstSubpass;
+    VkPipelineStageFlags    srcStageMask;
+    VkPipelineStageFlags    dstStageMask;
+    VkAccessFlags           srcAccessMask;
+    VkAccessFlags           dstAccessMask;
+    VkDependencyFlags       dependencyFlags;
+} VkSubpassDependency;
+```
+
 怎样玩转 Subpass 来增加性能将会在 **Vulkan 进阶** 一章中提到。这里因为就需要一个 subpass 所以直接走流程了。
 
 
@@ -62,7 +114,21 @@ Attachments 可以理解为一个具体 Render Target 的句柄（handle），**
 
 通过填充`VkRenderPassCreateInfo `来设置：
 
-```c++
+```cpp
+typedef struct VkRenderPassCreateInfo {
+    VkStructureType                   sType;
+    const void*                       pNext;
+    VkRenderPassCreateFlags           flags;
+    uint32_t                          attachmentCount;
+    const VkAttachmentDescription*    pAttachments;
+    uint32_t                          subpassCount;
+    const VkSubpassDescription*       pSubpasses;
+    uint32_t                          dependencyCount;
+    const VkSubpassDependency*        pDependencies;
+} VkRenderPassCreateInfo;
+```
+
+```cpp
 VkRenderPassCreateInfo renderPassInfo = {};
 renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
 renderPassInfo.attachmentCount = 1;
@@ -73,7 +139,7 @@ renderPassInfo.dependencyCount = 1;
 renderPassInfo.pDependencies = &dependency;
 ```
 
-通过`vkCreateRenderPass`创建一个Render Pass并存在`renderPass`中。
+通过 `vkCreateRenderPass` 创建一个Render Pass并存在 `renderPass` 成员变量中。
 
 需要注意的是，设置了那么半天 Render Pass，具体 attachment 都是谁并没有进行绑定。可以认为这么多工作只是在描述一个蓝图，而具体蓝图所对应的输入输出**需要在后面录制 Command Buffer 时才真正去进行绑定**。这种描述蓝图的性质也代表了声明出来的 Render Pass 具有通用性，可以适度进行复用。
 
@@ -84,7 +150,7 @@ renderPassInfo.pDependencies = &dependency;
 ```cpp
 void createRenderPass() {
     
-    // Describe Color RT
+    // Describe Color Attachment
     VkAttachmentDescription colorAttachment = {};
     colorAttachment.format = swapChainImageFormat;
     colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
@@ -95,7 +161,7 @@ void createRenderPass() {
     colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
     colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
-    // Describe Depth RT
+    // Describe Depth Attachment
     VkAttachmentDescription depthAttachment = {};
     depthAttachment.format = findDepthFormat();
     depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
@@ -132,7 +198,10 @@ void createRenderPass() {
     dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
     dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 
+    // Create Attachments Array
     std::array<VkAttachmentDescription, 2> attachments = { colorAttachment, depthAttachment };
+    
+    // Create Render Pass
     VkRenderPassCreateInfo renderPassInfo = {};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
     renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
