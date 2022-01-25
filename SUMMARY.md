@@ -70,9 +70,9 @@
     * [后记 & 代码实现](mdroot/Vulkan 基础/后记.md)
 * [Vulkan 进阶](mdroot/Vulkan 进阶.md)
   * [流水线复用/缓存](mdroot/Vulkan 进阶/流水线复用.md)
-    * [派生流水线](mdroot/Vulkan 进阶/流水线复用/派生流水线.md)
+    * [派生流水线 (Pipeline Derivatives)](mdroot/Vulkan 进阶/流水线复用/派生流水线.md)
   
-    * [流水线缓存](mdroot/Vulkan 进阶/流水线复用/流水线缓存.md)
+    * [流水线缓存 (Pipeline Cache)](mdroot/Vulkan 进阶/流水线复用/流水线缓存.md)
   * [向 Shader 传输数据](mdroot/Vulkan 进阶/向 Shader 传输数据.md)
     * [Dynamic Uniform Buffer](mdroot/Vulkan 进阶/向 Shader 传输数据/Dynamic Uniform Buffer.md)
   
