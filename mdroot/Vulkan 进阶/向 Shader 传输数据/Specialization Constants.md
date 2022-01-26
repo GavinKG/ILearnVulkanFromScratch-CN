@@ -1,13 +1,20 @@
 ## Specialization Constants
 
+https://github.com/SaschaWillems/Vulkan/blob/master/examples/specializationconstants/specializationconstants.cpp
+
+
+
+### 介绍
+
 > Specialization constants are a mechanism whereby constants in a SPIR-V module can have their constant value specified at the time the `VkPipeline` is created. This allows a SPIR-V module to have constants that canbe modified while executing an application that uses the Vulkan API.
 
-Specialization Constants 为 GLSL 中的一个常量，**在创建流水线时**指定其值。在这个案例中，shader 内部可以根据这个常量来决定使用哪个光照模型，从而避免掉重新编译和改变binding的工作：
+Specialization Constants 为 GLSL 中的一个常量，**在创建流水线时**指定其值。
+
+在这个案例中，shader 内部可以根据这个常量来决定使用哪个光照模型，从而避免掉重新编译和改变binding的工作：
 
 ```GLSL
-// define ...
 layout (constant_id = 0) const int LIGHTING_MODEL = 0;
-// ...
+
 void main() {
 	switch (LIGHTING_MODEL) {
 		case PHONG:
