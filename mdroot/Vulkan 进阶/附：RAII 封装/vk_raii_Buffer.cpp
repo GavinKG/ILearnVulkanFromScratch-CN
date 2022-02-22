@@ -2,8 +2,9 @@ class Buffer
 {
 public:
 
+    // 用于模板的类型萃取（type traits）和动态类型标识
+    // vulkan_raii.h 中目前并未使用
 	using CType = VkBuffer;
-
 	static constexpr vk::ObjectType objectType = vk::ObjectType::eBuffer;
 	static constexpr vk::DebugReportObjectTypeEXT debugReportObjectType = vk::DebugReportObjectTypeEXT::eBuffer;
 
@@ -87,13 +88,14 @@ public:
 		return *this;
 	}
 
-    // 通过 pointer-like 设计方法，暴露 RAII 所管理的资源。
+    // 通过 pointer-like 设计方法，暴露 RAII 所管理的资源的常量引用（const reference）。
+    // 用户代码需要注意，该 vk::Buffer 的 Ownership 还是归本类所管。
 	vk::Buffer const& operator*() const noexcept
 	{
 		return m_buffer;
 	}
 
-    // 获取该缓冲所对应的物理设备（VkDevice）
+    // 获取该缓冲所对应的逻辑设备（VkDevice）
 	vk::Device getDevice() const
 	{
 		return m_device;
@@ -106,14 +108,22 @@ public:
 	}
 
 	//=== VK_VERSION_1_0 ===
-
 	void bindMemory(vk::DeviceMemory memory, vk::DeviceSize memoryOffset) const;
-
 	[[nodiscard]] vk::MemoryRequirements getMemoryRequirements() const noexcept;
 
 private:
+
+    // Buffer 创建所需的 VkHandle
 	vk::Device m_device = {};
 	vk::Buffer m_buffer = {};
+
+    // 自定义内存分配器
 	const vk::AllocationCallbacks* m_allocator = nullptr;
+
+    // DeviceDispatcher，继承自 DispatchLoaderBase
+    // 即一系列和 Device 有关的方法集合，例如 vkCreateBuffer(VkDevice, ...)。
+    // 在该类构造时，函数会从驱动处得到函数指针（vkGetDeviceProcAddr）。
+    // 同样，例如 InstanceDispatcher 会打包一系列和 Instance 有关的方法集合，例如 vkEnumeratePhysicalDevices(VkInstance, ...)
+    // 该类型的设计紧跟 Vulkan Object 的层级设计：https://gpuopen.com/wp-content/uploads/2017/07/Vulkan-Diagram-568x1024.png
 	vk::raii::DeviceDispatcher const* m_dispatcher = nullptr;
 };
