@@ -1,4 +1,4 @@
-* [引用](mdroot/引用.md)
+* [引用和参考（必读）](mdroot/引用.md)
 * [Vulkan 命名和使用规范](mdroot/Vulkan 命名和使用规范.md)
 * [Vulkan 基础](mdroot/Vulkan 基础.md)
 
@@ -86,7 +86,6 @@
     * [Texture Array 和实例化渲染](mdroot/Vulkan 进阶/高级纹理/Texture Array 和实例化渲染.md)
   
     * [三维纹理](mdroot/Vulkan 进阶/高级纹理/三维纹理.md)
-  
   * [实例化渲染](mdroot/Vulkan 进阶/实例化渲染.md)
     * [使用 UBO 传递所有实例数据](mdroot/Vulkan 进阶/实例化渲染/使用 UBO 传递所有实例数据.md)
   
@@ -96,7 +95,6 @@
     * [Subpass 初步](mdroot/Vulkan 进阶/Subpass/Subpass 初步.md)
   
     * [Subpass 实战：延迟渲染优化](mdroot/Vulkan 进阶/Subpass/Subpass 实战：延迟渲染.md)
-  
   * [离屏渲染](mdroot/Vulkan 进阶/离屏渲染.md)
     * [渲染流程](mdroot/Vulkan 进阶/离屏渲染/渲染流程.md)
     * [渲染资源清单](mdroot/Vulkan 进阶/离屏渲染/渲染资源清单.md)
@@ -110,12 +108,10 @@
       * [渲染流程](mdroot/Vulkan 进阶/模板缓冲和模板测试/渲染流程.md)
   
       * [物体描边 Shader](mdroot/Vulkan 进阶/模板缓冲和模板测试/物体描边 Shader.md)
-  
   * [使用第三方库加载模型](mdroot/Vulkan 进阶/使用第三方库加载模型.md)
     * [tiny_obj_loader](mdroot/Vulkan 进阶/使用第三方库加载模型/tiny_obj_loader.md)
   
     * [Open Asset Import Library](mdroot/Vulkan 进阶/使用第三方库加载模型/Open Asset Import Library.md)
-  
   * [Vulkan in Action：CPU 粒子系统](mdroot/Vulkan 进阶/Vulkan in Action：CPU 粒子系统.md)
     * [粒子](mdroot/Vulkan 进阶/Vulkan in Action：CPU 粒子系统/粒子.md)
     * [粒子发射器](mdroot/Vulkan 进阶/Vulkan in Action：CPU 粒子系统/粒子发射器.md)
@@ -124,7 +120,6 @@
   
     * [渲染流程](mdroot/Vulkan 进阶/Vulkan in Action：简单场景绘制/渲染流程.md)
     * [总结](mdroot/Vulkan 进阶/Vulkan in Action：简单场景绘制/总结.md)
-  
   * [次级指令缓冲和多线程录制](mdroot/Vulkan 进阶/次级指令缓冲和多线程录制.md)
     * [次级指令缓冲](mdroot/Vulkan 进阶/次级指令缓冲和多线程录制/次级指令缓冲.md)
     * [多线程指令缓冲录制](mdroot/Vulkan 进阶/次级指令缓冲和多线程录制/多线程指令缓冲录制.md)
@@ -139,26 +134,18 @@
     * [流水线统计数据查询](mdroot/Vulkan 进阶/查询/流水线统计数据查询.md)
   
     * [时间戳查询](mdroot/Vulkan 进阶/查询/时间戳查询.md)
-  
   * [Compute Shader](mdroot/Vulkan 进阶/Compute Shader.md)
     * [基本流程](mdroot/Vulkan 进阶/Compute Shader/基本流程.md)
-  
     * [Shader 初见：图像处理](mdroot/Vulkan 进阶/Compute Shader/Shader 初见：图像处理.md)
-  
     * [GPU 粒子系统初步](mdroot/Vulkan 进阶/Compute Shader/GPU 粒子系统初步.md)
-  
     * [GPU 粒子系统进阶：N体模拟](mdroot/Vulkan 进阶/Compute Shader/GPU 粒子系统进阶：N体模拟.md)
-  
-    * [基于 Compute 的光线追踪](mdroot/Vulkan 进阶/Compute Shader/光线追踪.md)
-    * [Compute Shader 简单实现](mdroot/Vulkan 进阶/Compute Shader/光线追踪/Compute Shader 简单实现.md)
 * [绘制进阶](mdroot/绘制进阶.md)
   * [光照](mdroot/绘制进阶/光照.md)
-    
-      * [拟真光照模型](mdroot/绘制进阶/光照/拟真光照模型.md)
+    * [拟真光照模型](mdroot/绘制进阶/光照/拟真光照模型.md)
       
       * [光照纹理](mdroot/绘制进阶/光照/光照纹理.md)
-    * [基于物理的着色](mdroot/绘制进阶/基于物理的着色.md)
-
+      * [基于物理的着色](mdroot/绘制进阶/基于物理的着色.md)
+    
       * [PBR 通俗理解和直接光照](mdroot/绘制进阶/基于物理的着色/PBR 通俗理解和直接光照.md)
     * [IBL](mdroot/绘制进阶/基于物理的着色/IBL.md)
     * [复杂材质](mdroot/绘制进阶/基于物理的着色/复杂材质.md)
