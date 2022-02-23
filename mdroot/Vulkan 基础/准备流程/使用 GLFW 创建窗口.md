@@ -2,7 +2,7 @@
 
 **原文：https://vulkan-tutorial.com/Drawing_a_triangle/Setup/Base_code**
 
-这里使用GLFW（Graphics Library Framework）初始化一个窗口。GLFW 具体是做什么的可以直接去维基看（https://zh.wikipedia.org/zh-hans/GLFW，其实说的也很简练，最好直接去官网看doc）。
+在开始和 Vulkan 打交道之前，我们需要先创建一个窗口，才能实时看到之后渲染出来的结果。我们可以自己亲自动手和 Windows 等操作系统的窗口管理器打交道，但这里我们直接使用 [GLFW](https://zh.wikipedia.org/zh-hans/GLFW)（Graphics Library Framework）初始化一个窗口，省时省力。
 
 一个使用 GLFW 完整驱动的大致流程如下：
 

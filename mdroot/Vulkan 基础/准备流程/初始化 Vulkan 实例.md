@@ -9,7 +9,7 @@
 
 ### 初始化顺序
 
-一个 Instance 类似于一个 Session（类比一下虚幻引擎的`GameInstance`），在 instance 里处理所有的和 Vulkan 有关的东西。
+一个 Instance 类似于一个 Session，**在 instance 里处理所有的和 Vulkan 有关的东西**。
 
 初始化这些东西比较走流程，这里直接列出来吧：
 
