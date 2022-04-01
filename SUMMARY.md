@@ -4,33 +4,33 @@
 
     * [准备流程](mdroot/Vulkan 基础/准备流程.md)
       * [使用 GLFW 创建窗口](mdroot/Vulkan 基础/准备流程/使用 GLFW 创建窗口.md)
-      
+    
       * [初始化 Vulkan 实例](mdroot/Vulkan 基础/准备流程/初始化 Vulkan 实例.md)
-      
+    
       * [验证层 (Validation Layer)](mdroot/Vulkan 基础/准备流程/验证层.md)
-      
-      * [借助 GLFW 创建 Surface](mdroot/Vulkan 基础/准备流程/借助 GLFW 创建 Surface.md)
-      
+    
+      * [借助 GLFW 获取 Surface](mdroot/Vulkan 基础/准备流程/借助 GLFW 创建 Surface.md)
+    
       * [指定物理设备 (Physical Device)](mdroot/Vulkan 基础/准备流程/指定物理设备.md)
-      
+    
       * [抽象逻辑设备 (Logical Device)](mdroot/Vulkan 基础/准备流程/抽象逻辑设备.md)
-      
+    
       * [交换链 (Swap Chain)](mdroot/Vulkan 基础/准备流程/Swap Chain.md)
-      
+    
       * [创建图像视图 (Image View)](mdroot/Vulkan 基础/准备流程/创建 Image View.md)
-      
+    
       * [Render Pass 和 Attachments](mdroot/Vulkan 基础/准备流程/Render Pass.md)
-      
+    
       * [图形流水线 (Graphics Pipeline)](mdroot/Vulkan 基础/准备流程/图形流水线.md)
-      
+    
       * [帧缓冲 (Framebuffer)](mdroot/Vulkan 基础/准备流程/帧缓冲.md)
-      
+    
       * [指令缓冲 (Command Buffer)](mdroot/Vulkan 基础/准备流程/指令缓冲.md)
-      
+    
       * [同步渲染流程 (Synchronization)](mdroot/Vulkan 基础/准备流程/渲染流程.md)
-      
+    
       * [重建 Swap Chain](mdroot/Vulkan 基础/准备流程/重建 Swap Chain.md)
-      
+    
       * [后记](mdroot/Vulkan 基础/准备流程/后记.md)
     * [绘制几何体](mdroot/Vulkan 基础/绘制几何体.md)
       * [顶点 (Vertex)](mdroot/Vulkan 基础/绘制几何体/顶点.md)
@@ -40,10 +40,8 @@
       * [Staging Buffer](mdroot/Vulkan 基础/绘制几何体/Staging Buffer.md)
     
       * [索引缓冲 (Index Buffer)](mdroot/Vulkan 基础/绘制几何体/索引缓冲.md)
-    * [资源描述与 Uniform 缓冲](mdroot/Vulkan 基础/资源描述与 Uniform 缓冲.md)
-      * [资源描述 (Descriptor)](mdroot/Vulkan 基础/资源描述与 Uniform 缓冲/资源描述.md)
-        
-      * [Uniform 缓冲 (Uniform Buffer Object)](mdroot/Vulkan 基础/资源描述与 Uniform 缓冲/UBO.md)
+    * [资源描述 (Descriptor)](mdroot/Vulkan 基础/资源描述.md)
+    * [Uniform 缓冲 (Uniform Buffer Object)](mdroot/Vulkan 基础/UBO.md)
     * [图像纹理 (Texturing)](mdroot/Vulkan 基础/图像纹理.md)
       * [从外部加载图像](mdroot/Vulkan 基础/图像纹理/从外部加载图像.md)
         
@@ -61,11 +59,11 @@
       * [应用深度传冲](mdroot/Vulkan 基础/深度缓冲/应用深度传冲.md)
     * [Mipmapping](mdroot/Vulkan 基础/Mipmaps.md)
       * [创建带有 Mipmaps 的图像](mdroot/Vulkan 基础/Mipmaps/创建 image.md)
-      
+    
       * [配置 Mipmaps](mdroot/Vulkan 基础/Mipmaps/配置 mipmaps.md)
     * [多重采样抗锯齿 (MSAA)](mdroot/Vulkan 基础/MSAA.md)
       * [更新流程](mdroot/Vulkan 基础/MSAA/修改流程.md)
-      
+    
       * [Sample Shading 消除着色锯齿](mdroot/Vulkan 基础/MSAA/Sample Shading.md)
     * [后记 & 代码实现](mdroot/Vulkan 基础/后记.md)
 * [Vulkan 进阶](mdroot/Vulkan 进阶.md)
@@ -86,7 +84,7 @@
     * [Texture Array 和实例化渲染](mdroot/Vulkan 进阶/高级纹理/Texture Array 和实例化渲染.md)
   
     * [三维纹理](mdroot/Vulkan 进阶/高级纹理/三维纹理.md)
-  * [实例化渲染](mdroot/Vulkan 进阶/实例化渲染.md)
+  * [实例化渲染（Instancing）](mdroot/Vulkan 进阶/实例化渲染.md)
     * [使用 UBO 传递所有实例数据](mdroot/Vulkan 进阶/实例化渲染/使用 UBO 传递所有实例数据.md)
   
     * [使用 Texture Array 指定实例纹理](mdroot/Vulkan 进阶/实例化渲染/使用 Texture Array 指定实例纹理.md)
@@ -105,18 +103,14 @@
       * [渲染流程](mdroot/Vulkan 进阶/模板缓冲和模板测试/渲染流程.md)
   
       * [物体描边 Shader](mdroot/Vulkan 进阶/模板缓冲和模板测试/物体描边 Shader.md)
-  * [使用第三方库加载模型](mdroot/Vulkan 进阶/使用第三方库加载模型.md)
-    * [tiny_obj_loader](mdroot/Vulkan 进阶/使用第三方库加载模型/tiny_obj_loader.md)
   * [Vulkan in Action：CPU 粒子系统](mdroot/Vulkan 进阶/Vulkan in Action：CPU 粒子系统.md)
     * [粒子](mdroot/Vulkan 进阶/Vulkan in Action：CPU 粒子系统/粒子.md)
     * [粒子发射器](mdroot/Vulkan 进阶/Vulkan in Action：CPU 粒子系统/粒子发射器.md)
-  * [次级指令缓冲和多线程录制](mdroot/Vulkan 进阶/次级指令缓冲和多线程录制.md)
-    * [次级指令缓冲](mdroot/Vulkan 进阶/次级指令缓冲和多线程录制/次级指令缓冲.md)
-    * [多线程指令缓冲录制](mdroot/Vulkan 进阶/次级指令缓冲和多线程录制/多线程指令缓冲录制.md)
-  * [间接绘制](mdroot/Vulkan 进阶/间接绘制.md)
+  * [次级指令缓冲（Secondary Command Buffer）和多线程录制](mdroot/Vulkan 进阶/次级指令缓冲和多线程录制.md)
+  * [间接绘制（Indirect Drawing）](mdroot/Vulkan 进阶/间接绘制.md)
     * [离线准备绘制命令](mdroot/Vulkan 进阶/间接绘制/离线准备绘制命令.md)
     * [渲染](mdroot/Vulkan 进阶/间接绘制/渲染.md)
-  * [查询](mdroot/Vulkan 进阶/查询.md)
+  * [查询（Queries）](mdroot/Vulkan 进阶/查询.md)
     * [查询流程](mdroot/Vulkan 进阶/查询/查询流程.md)
   
     * [遮挡查询](mdroot/Vulkan 进阶/查询/遮挡查询.md)

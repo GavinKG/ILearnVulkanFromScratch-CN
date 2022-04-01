@@ -1,6 +1,6 @@
 
 
-## 借助 GLFW 创建 Surface
+## 借助 GLFW 获取 Surface
 
 **原文：https://vulkan-tutorial.com/Drawing_a_triangle/Presentation/Window_surface**
 
