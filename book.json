@@ -13,7 +13,8 @@
 		"sitemap-general",
         "page-toc",
         "katex",
-		"search-plus"
+		"search-plus",
+		"tbfed-pagefooter"
     ],
 	"pluginsConfig": {
         "github-buttons": {
@@ -31,6 +32,11 @@
 			"selector": ".markdown-section h1, .markdown-section h2, .markdown-section h3, .markdown-section h4",
 			"position": "before-first",
 			"showByDefault": true
+        },
+        "tbfed-pagefooter": {
+            "copyright":"",
+            "modify_label": "该文件最后修改时间：",
+            "modify_format": "YYYY-MM-DD HH:mm:ss"
         }
     }
 }
