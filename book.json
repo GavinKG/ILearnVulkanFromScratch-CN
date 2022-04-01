@@ -14,7 +14,8 @@
         "page-toc",
         "katex",
 		"search-plus",
-		"tbfed-pagefooter"
+		"tbfed-pagefooter",
+		"theme-fexa"
     ],
 	"pluginsConfig": {
         "github-buttons": {
@@ -37,6 +38,11 @@
             "copyright":"",
             "modify_label": "该文件最后修改时间：",
             "modify_format": "YYYY-MM-DD HH:mm:ss"
+        },
+        "theme-fexa":{
+            "search-placeholder":"输入关键字搜索",
+            "logo":"./logo.jfif",
+            "favicon": "./favicon.ico"
         }
     }
 }

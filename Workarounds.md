@@ -17,7 +17,8 @@ Gitbook package does not support newer version of node.js. Here are some workaro
 
   when using gitbook command for the first time, it will install Gitbook 3.2.3.
 
-  
+
+Note: node_modules has been modified.
 
 Migrating to hexo is considered.
 
