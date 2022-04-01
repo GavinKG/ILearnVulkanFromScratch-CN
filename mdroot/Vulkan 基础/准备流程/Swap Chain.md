@@ -34,10 +34,23 @@
 
   现在要从之前验证设备时获取到的众多`VkPresentModeKHR`中获取到最合适的一种。其中可选择的有：
 
-  * `VK_PRESENT_MODE_IMMEDIATE_KHR`：不加缓冲，画面渲染好了直接写入到 copying 图像中（破坏了原子性），可能会导致同一时间有两张图像被呈现，导致“撕裂”。有些 GPU 和操作系统不支持这个模式。
-  * `VK_PRESENT_MODE_FIFO_KHR`：类似于其它 API 的 Double Buffering，使用一个队列保存渲染好的 Image，Vblank 时取队首 Image 准备呈现，copy 到呈现设备后回收供渲染器再次写入。这样做可以避免撕裂。由于队列是有固定长度的，所以如果渲染速度贼快导致队列满了，渲染这边就要不到新的 Image 用来渲染，从而导致等待（Hang），同时队列里的 Image 因为并没有更新导致该图像的生成时间和当前用户的输入时间差比较大，造成用户的输入延迟。兼容 Vulkan 的显卡必须支持这个模式。
-  * `VK_PRESENT_MODE_FIFO_RELAXED_KHR`：和 FIFO 差不多，但 FIFO 状态下，如果性能不足没来得及渲染一整张画面导致队列为空，但 Vblank 来了，则呈现引擎会再度把之前呈现的画面再呈现一次，导致延迟更大了。这个模式下 Vblank 时队列空则直接（IMMEDIATE）输出，当性能跟不上刷新率时会导致撕裂，也算是一种比较好的妥协。
-  * `VK_PRESENT_MODE_MAILBOX_KHR`：类似于 Triple Buffering。这里不再使用 FIFO 的概念，而是每次渲染完毕时直接拿走队尾里最旧的那个 Image 来回收，然后把新的 Image 放进队首。呈现引擎拿走队首的，避免撕裂同时减小延迟，但会浪费掉很多性能，在移动平台等需要 efficiency 的地方要慎用。
+  * `VK_PRESENT_MODE_IMMEDIATE_KHR`：不加缓冲，画面渲染好了直接写入到 copying 图像中（破坏了原子性），可能会导致同一时间有两张图像被呈现，**导致“撕裂”**。有些 GPU 和操作系统不支持这个模式。
+
+  * `VK_PRESENT_MODE_FIFO_KHR`：类似于其它 API 的 **双重缓冲（Double Buffering）**，使用一个队列保存渲染好的 Image，Vblank 时取队首 Image 准备呈现，copy 到呈现设备后回收供渲染器再次写入。这样做可以避免撕裂。由于队列是有固定长度的，所以如果渲染速度贼快导致队列满了，渲染这边就要不到新的 Image 用来渲染，从而导致等待（Hang），同时队列里的 Image 因为并没有更新导致该图像的生成时间和当前用户的输入时间差比较大，造成用户的输入延迟。兼容 Vulkan 的显卡必须支持这个模式。
+
+  * `VK_PRESENT_MODE_FIFO_RELAXED_KHR`：和 FIFO 差不多，但 FIFO 状态下，如果性能不足没来得及渲染一整张画面导致队列为空，但 Vblank 来了，则呈现引擎会再度把之前呈现的画面再呈现一次，导致延迟更大了。在 FIFO Relaxed 模式下， Vblank 时队列空则直接（IMMEDIATE）输出，**当性能跟不上刷新率时会导致撕裂，性能跟得上时实现双重缓冲**，也算是一种比较好的妥协。
+
+  * `VK_PRESENT_MODE_MAILBOX_KHR`：类似于 **三重缓冲（Triple Buffering）**。这里不再使用 FIFO 的概念，而是每次渲染完毕时直接拿走队尾里最旧的那个 Image 来回收，然后把新的 Image 放进队首。呈现引擎拿走队首的，避免撕裂同时减小延迟。例如：
+
+    ```
+     Spare  | Beefy GPU 💪 | Present
+    #1  #2        #3            #4
+    #3  #1        #2            #4     - 显示器依然没到Vblank；从队列中拿取最旧的(#2)渲染
+    #2  #3        #1            #4     - 显示器依然没到Vblank；从队列中拿取最旧的(#1)渲染
+    #4  #3        #1            #2     - Vblank到了（没渲染完毕），从队列中拿取最新的(#1)呈现
+    ```
+
+    如果 CPU/GPU 特别强且刷新率不太高的情况下，除了呈现引擎的那张 Image 以外，其它图将会一圈又一圈的被重复渲染。其能够减小输入延迟，但会浪费掉很多性能，在移动平台等地方要慎用。
 
   这里首选 MAILBOX，如果不行则回退到 FIFO。
 
@@ -47,11 +60,13 @@
 
 * **图像数量**
 
-  图像数量和选择的显示模式有关，但要多了也不会怎么样。一个经验主义的设置方法就是比 `VkSurfaceCapabilitiesKHR` 实例里的 `minImageCount` 多要一个。
+  图像数量和选择的显示模式有关，但要多了也不会怎么样。
+  
+  一个经验主义的设置方法就是比 `VkSurfaceCapabilitiesKHR` 实例里的 `minImageCount` 多要一个。
 
 
 
-### 生成Swap Chain
+### 生成 Swap Chain
 
 **原文：https://vulkan-tutorial.com/Drawing_a_triangle/Presentation/Swap_chain**
 
