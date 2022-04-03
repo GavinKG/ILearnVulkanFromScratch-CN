@@ -20,7 +20,7 @@ $$L_o(p,\omega_o) =  	\int\limits_{\Omega} (k_d\frac{c}{\pi}) L_i(p,\omega_i) n 
 
 先考虑前面的漫反射部分。将上述漫反射部分的常数提出积分得到：
 
-$k_d\frac{c}{\pi} \int\limits_{\Omega} L_i(p,\omega_i) n \cdot \omega_i  \mathrm d\omega_i$
+$$k_d\frac{c}{\pi} \int\limits_{\Omega} L_i(p,\omega_i) n \cdot \omega_i  \mathrm d\omega_i$$
 
 p 这里因为有上面的“周围物体足够远”的假设，这里也没什么关系了。看来这时候积分只和入射方向有关了，而 Cubemap 本身就可以记录整个球面的入射角度，所以 Cubemap 在这里很好的派上了用场。为了避免运行时做“积分”，我们可以在运行前预处理这张 Cubemap，**让我们在每个方向上采样到的值就是该方向上整个半球方向上的光照强度和（pre-sum）**。
 
@@ -36,11 +36,11 @@ p 这里因为有上面的“周围物体足够远”的假设，这里也没什
 
 下面首先开始简化这个积分：
 
-$\int\limits_{\Omega} L_i(p,\omega_i) n \cdot \omega_i  \mathrm d\omega_i$
+$$\int\limits_{\Omega} L_i(p,\omega_i) n \cdot \omega_i  \mathrm d\omega_i$$
 
 首先把这个立体角积分改成更熟悉一些的球体表面积积分（球坐标系，$r=1$）：
 
-$\int_{0}^{2\pi} \int_{0}^{\frac{\pi}{2}} L_i(p,\phi_i, \theta_i) \cos(\theta) \sin(\theta)  \mathrm d\phi \mathrm d\theta$
+$$\int_{0}^{2\pi} \int_{0}^{\frac{\pi}{2}} L_i(p,\phi_i, \theta_i) \cos(\theta) \sin(\theta)  \mathrm d\phi \mathrm d\theta$$
 
 这时候套上黎曼积分，我们可以写出以下 GLSL 程序：
 
@@ -83,13 +83,13 @@ irradiance = PI * irradiance * (1.0 / float(nrSamples));
 
 再考虑后半截的 Specular 部分：
 
- $\int\limits_{\Omega_{f_{r}}} f_r(p, \omega_i, \omega_o) L_i(p,\omega_i) n \cdot \omega_i  \mathrm d\omega_i$
+$$\int\limits_{\Omega_{f_{r}}} f_r(p, \omega_i, \omega_o) L_i(p,\omega_i) n \cdot \omega_i  \mathrm d\omega_i$$
 
 之前提到了，只有入射光 wi 为变量的积分可以利用 Cubemap，而这里 wi 和 wo 都成为了变量，并且光照项和 BRDF 项乘在一起，变量的维度非常高，不适合合在一起进行类似于预计算的操作。
 
 这里使用**分裂和近似法（Split Sum Approximation）**来拆这个积分，并且将积分拆成光照 L 在 BRDF 覆盖范围（Specular Lobe / BRDF Lobe）内的积分和Fresnel 项乘上光通在 BRDF 覆盖范围的积分，也就是**拆成了光照（Lighting）部分和光线传播（Light Transport）部分**。拆完了以后得到：
 
-$L_o(p,\omega_o) \approx  	(\int\limits_{\Omega} L_i(p,\omega_i) \mathrm d\omega_i)	(\int\limits_{\Omega} f_r(p, \omega_i, \omega_o) n \cdot \omega_i \mathrm d\omega_i)$
+$$L_o(p,\omega_o) \approx  	(\int\limits_{\Omega} L_i(p,\omega_i) \mathrm d\omega_i)	(\int\limits_{\Omega} f_r(p, \omega_i, \omega_o) n \cdot \omega_i \mathrm d\omega_i)$$
 
 这里说两个问题：
 
@@ -98,7 +98,9 @@ $L_o(p,\omega_o) \approx  	(\int\limits_{\Omega} L_i(p,\omega_i) \mathrm d\omega
 
 ### 第一部分：光照部分
 
-先来看前半部分：$\int\limits_{\Omega_{f{r}}} L_i(p,\omega_i) \mathrm d\omega_i$
+先来看前半部分：
+
+$$\int\limits_{\Omega_{f{r}}} L_i(p,\omega_i) \mathrm d\omega_i$$
 
 这部分看起来和上面 Diffuse IBL 非常接近，而唯一不一样的是它的积分域从整个半球变为了 BRDF 的覆盖范围，也就是上面一直在提的 Specular Lobe / BRDF Lobe，于是积分域就和 Lobe “撑起来的胖瘦程度”有关了，而上一篇里提到，Lobe 和 BRDF 项的 Roughness 有直接关系——越粗糙，高光越分散。因此这里虽然是光照部分，但也要考虑 Roughness 了。而 Roughness 是变量，因此我们需要得到一系列不同 Roughness 所对应的 Cubemap。
 
@@ -106,13 +108,15 @@ $L_o(p,\omega_o) \approx  	(\int\limits_{\Omega} L_i(p,\omega_i) \mathrm d\omega
 
 ![](https://learnopengl-cn.github.io/img/07/03/02/ibl_prefilter_map.png)
 
-但是等一下，刚刚说 Lobe 所产生的球面积分域和 BRDF 项的 Roughness 有直接关系，但其肯定当然还和出射角有关，但我们没有考虑！这里其实做了一个很大胆的假设：**假设视线方向和出射方向一样（即 $V=R=N$​​​​）**，原因是最终效果其实和考虑出射方向的效果（Ground Truth）差不多。但是这么做当然也是会有误差的，尤其是在视线几乎垂直于法线的掠射方向上会无法获得很好的掠射镜面反射。如下图所示（来自 LearnOpenGL）：
+但是等一下，刚刚说 Lobe 所产生的球面积分域和 BRDF 项的 Roughness 有直接关系，但其肯定当然还和出射角有关，但我们没有考虑！这里其实做了一个很大胆的假设：**假设视线方向和出射方向一样（即 $V=R=N$）**，原因是最终效果其实和考虑出射方向的效果（Ground Truth）差不多。但是这么做当然也是会有误差的，尤其是在视线几乎垂直于法线的掠射方向上会无法获得很好的掠射镜面反射。如下图所示（来自 LearnOpenGL）：
 
 ![](https://learnopengl-cn.github.io/img/07/03/02/ibl_grazing_angles.png)
 
 ### 第二部分：光线传播部分
 
-再来看后半部分：$\int\limits_{\Omega} f_r(p, \omega_i, \omega_o) n \cdot \omega_i \mathrm d\omega_i$
+再来看后半部分：
+
+$$\int\limits_{\Omega} f_r(p, \omega_i, \omega_o) n \cdot \omega_i \mathrm d\omega_i$$
 
 这个积分也被称为**镜面积分**。
 
@@ -120,19 +124,19 @@ $L_o(p,\omega_o) \approx  	(\int\limits_{\Omega} L_i(p,\omega_i) \mathrm d\omega
 
 首先，对于光照方向和观察方向来说，我们假设**观察方向就是光照方向的反射方向**，即 $V=R$​，那么这两个值我们就能够用一个观察方向和法线的夹角 $\theta$​ 来表示了。Nice！
 
-现在积分里面还有三个变量：$\theta$​、粗糙度 $\alpha$​​​​​、F0。我们通过一系列操作可以将 F0 提取到外面（这里先不记录推导了，但是要注意推导依旧把不等式看作了近似相等，因此依然是一种近似）得到两个积分式相加：
+现在积分里面还有三个变量：$\theta$、粗糙度 $\alpha$、F0。我们通过一系列操作可以将 F0 提取到外面（这里先不记录推导了，但是要注意推导依旧把不等式看作了近似相等，因此依然是一种近似）得到两个积分式相加：
 
-$F_0\int\limits_{\Omega} f_r(p, \omega_i, \omega_o) (1-(1-\omega_o\cdot h)^5)n\cdot \omega_i) \mathrm d\omega_i + \int\limits_{\Omega} f_r(p, \omega_i, \omega_o)(1-\omega_o \cdot h)^5 n \cdot \omega_i \mathrm d\omega_i$
+$$F_0\int\limits_{\Omega} f_r(p, \omega_i, \omega_o) (1-(1-\omega_o\cdot h)^5)n\cdot \omega_i) \mathrm d\omega_i + \int\limits_{\Omega} f_r(p, \omega_i, \omega_o)(1-\omega_o \cdot h)^5 n \cdot \omega_i \mathrm d\omega_i$$
 
-积分式子里面留下来了夹角和粗糙度。此时我们终于可以对这两个变量着手开始预处理了，就把夹角 $cos(\theta)$​​​ 放在横轴，粗糙度放在纵轴，因为值域都是 [0, 1]​​ ，因此刚好能对应上预处理贴图的 UV 坐标，预处理贴图的红色和绿色通道就对应着这两个积分式的结果吧！式子一下子就简化为：
+积分式子里面留下来了夹角和粗糙度。此时我们终于可以对这两个变量着手开始预处理了，就把夹角 $cos(\theta)$ 放在横轴，粗糙度放在纵轴，因为值域都是 [0, 1] ，因此刚好能对应上预处理贴图的 UV 坐标，预处理贴图的红色和绿色通道就对应着这两个积分式的结果吧！式子一下子就简化为：
 
-$F_0 \cdot R + G$
+$$F_0 \cdot R + G$$
 
 这张图有一个很响亮的名字：**BRDF Integration Map**，BRDF 积分图，其长这个样子（来自 LearnOpenGL，左下角为坐标原点）：
 
 ![](https://learnopengl-cn.github.io/img/07/03/02/ibl_brdf_lut.png)
 
-横轴为 $cos(\theta)$​，纵轴为粗糙度，得到的值即为两个积分式的积分结果。这张图是一张很经典的 LUT。
+横轴为 $cos(\theta)$，纵轴为粗糙度，得到的值即为两个积分式的积分结果。这张图是一张很经典的 LUT。
 
 
 

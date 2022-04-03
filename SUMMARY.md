@@ -124,32 +124,27 @@
     * [GPU 粒子系统初步](mdroot/Vulkan 进阶/Compute Shader/GPU 粒子系统初步.md)
     * [GPU 粒子系统进阶：N体模拟](mdroot/Vulkan 进阶/Compute Shader/GPU 粒子系统进阶：N体模拟.md)
 * [绘制进阶](mdroot/绘制进阶.md)
-  * [光照](mdroot/绘制进阶/光照.md)
-    * [拟真光照模型](mdroot/绘制进阶/光照/拟真光照模型.md)
-      
-      * [光照纹理](mdroot/绘制进阶/光照/光照纹理.md)
-      * [基于物理的着色](mdroot/绘制进阶/基于物理的着色.md)
-  
-      * [PBR 通俗理解和直接光照](mdroot/绘制进阶/基于物理的着色/PBR 通俗理解和直接光照.md)
-    * [IBL](mdroot/绘制进阶/基于物理的着色/IBL.md)
-  * [复杂材质](mdroot/绘制进阶/基于物理的着色/复杂材质.md)
+
+  * [PBR 通俗理解和直接光照](mdroot/绘制进阶/PBR 通俗理解和直接光照.md)
+  * [IBL](mdroot/绘制进阶/IBL.md)
+
+  * [复杂材质](mdroot/绘制进阶/复杂材质.md)
   * [后处理特效](mdroot/绘制进阶/后处理特效.md)
-  
     * [全屏幕多边形](mdroot/绘制进阶/后处理特效/全屏幕多边形.md)
       
     * [后处理特效汇总](mdroot/绘制进阶/后处理特效/后处理特效汇总.md)
   * [HDR](mdroot/绘制进阶/HDR.md)
-  
+
     * [HDR 简介](mdroot/绘制进阶/HDR/HDR 简介.md)
-  
+
     * [泛光特效](mdroot/绘制进阶/HDR/泛光特效.md)
-  
+
     * [绘制流程](mdroot/绘制进阶/HDR/绘制流程.md)
   * [阴影](mdroot/绘制进阶/阴影.md)
     * [阴影映射](mdroot/绘制进阶/阴影/阴影映射.md)
-  
+
     * [点光源阴影与全向阴影贴图](mdroot/绘制进阶/阴影/点光源阴影与全向阴影贴图.md)
-  
+
     * [级联阴影映射](mdroot/绘制进阶/阴影/级联阴影映射.md)
 * [概念汇总](mdroot/概念汇总.md)
     * [设备与逻辑设备 Physical / Logical Device](mdroot/概念汇总/设备与逻辑设备.md)
