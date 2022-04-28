@@ -148,6 +148,7 @@
     * [级联阴影映射](mdroot/绘制进阶/阴影/级联阴影映射.md)
 * [概念汇总](mdroot/概念汇总.md)
     * [设备与逻辑设备 Physical / Logical Device](mdroot/概念汇总/设备与逻辑设备.md)
+    * [设备内存类型](mdroot/概念汇总/设备内存类型.md)
     * [缓冲与图像 Buffer & Image](mdroot/概念汇总/缓冲与图像.md)
     * [图像布局和排列 Image Layout & Tiling](mdroot/概念汇总/图像布局和排列.md)
     * [表面 Surface](mdroot/概念汇总/表面.md)
