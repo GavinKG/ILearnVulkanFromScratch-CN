@@ -1,9 +1,0 @@
-# Vulkan 基础
-
-**Vulkan 基础主要基于《Vulkan Toturial by Alexander Overvoorde》（https://vulkan-tutorial.com/）中的案例所写**，这个网站这也是我第一次学习 Vulkan 的途径。这一章很多内容也都仅仅是把原文用中文略带一些口语化的方法记录下来，所以强烈推荐一起学习的小伙伴们配合着原文一起食用。
-
-在 Vulkan 基础中，我们将接触到绘制一个最基础的三角形所需要的所有 Vulkan 对象（比你想象的要多哦）。**Vulkan 对象是有层级的**，可以通过下图提前领略一下：
-
-![Vulkan Objects Diagram](Vulkan 基础/Vulkan-Diagram-568x1024.webp)
-
-我们将从最上层的 Instance 和 Surface（此处即显示窗口）开始，找到我们的显卡（Physical Device），创建出逻辑绘图设备（Device），创建绘制队列（Queue）、交换链（Swap Chain），然后开始准备我们绘制用的缓冲（Buffer）和图像（Image），创建和显卡通信所使用的指令缓冲（Command Buffer），配置绘制所需要的帧缓冲（Framebuffer）、流水线（Pipeline）、Render Pass、做好绘制/呈现/客户端同步所使用的信号量（Semaphore，Fence），然后开始绘制。
