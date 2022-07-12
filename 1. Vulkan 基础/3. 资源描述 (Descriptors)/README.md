@@ -1,20 +1,19 @@
 # 资源描述 (Descriptor) 和资源的绑定 (Binding)
 
-**原文：https://vulkan-tutorial.com/Uniform_buffers/Descriptor_layout_and_buffer**
-
 
 
 ## 概念
 
-从这一章开始，我们要通过客户端向 Shader 中传递一些通用的数据（而并非流水线中传递的变量，如顶点坐标/颜色等）来增加 Shader 的功能，诸如三维坐标变换矩阵，贴图和其它几乎任何变量或结构体。这些变量在客户端中被成为 **Descriptor，即资源描述，或资源描述符**。
+从这一章开始，我们要通过客户端向 Shader 中传递一些通用的数据（而并非流水线中传递的变量，如顶点坐标/颜色等）来增加 Shader 的功能，诸如视口参数（变换矩阵、时间、Framebuffer 大小等），纹理贴图和其它几乎任何数据或结构体。**这些向 Shader 提供的，需要被绑定在流水线上的资源**在客户端中被成为 "Descriptor"，即资源描述，或资源描述符。
 
 一个 Descriptor 的种类有很多，常见的例如（这里使用 `VkDescriptorType` 中的枚举名称）：
 
 * `VK_DESCRIPTOR_TYPE_SAMPLER`：采样器，指定图片被读取的方式，之后会提到。
 * `VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE`：Shader 中能被采样的纹理对象。
 * `VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER`：将采样器和能够采样的纹理对象打包起来，成为一个资源描述，之后会提到。
-* `VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER`：Uniform Buffer Object (UBO)，见下章。
-* `VK_DESCRIPTOR_TYPE_STORAGE_BUFFER`：存储缓冲 Shader Storage Buffer Object (SSBO)，允许我们在 Shader 中读写变量值。
+* `VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER`：Uniform Buffer Object (UBO)，存储一些 Shader 只读的小批量数据。见下章。
+* `VK_DESCRIPTOR_TYPE_STORAGE_BUFFER`：存储缓冲 Shader Storage Buffer Object (SSBO)，允许我们在 Shader 中读/写缓存中的值。
+* `VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER`：缓冲纹理 (Buffer Texture)，其中每个元素为 GPU 特定的“像素”格式（例如 `RGBA8_UNorm`），Shader 中读取该“像素”会被解释为可直接使用的标量或向量（例如上述格式对应为 `vec4`）
 
 详细列表可以参考[官方文档](https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VkDescriptorType.html)。
 
@@ -24,7 +23,7 @@
 
 
 
-## 构建流水线绑定"模板"：Pipeline Layout
+## 构建流水线资源绑定"模板"：Pipeline Layout
 
 ![img](https://www.oreilly.com/library/view/vulkan-cookbook/9781786468154/assets/B05542-08-03-1.png)
 
@@ -32,15 +31,16 @@
 
 
 
-### 资源描述绑定布局 Descriptor Set Layout Binding
+### 创建 Descriptor Set Layout Binding
+*或简称为 Binding / DSL Binding。*
 
-每一个 Descriptor 都需要通过填写 `VkDescriptorSetLayoutBinding` 结构体，**将 Descriptor 和 Layout 进行绑定**。这里举一个配置给 Vertex Shader 传入变换矩阵的 Uniform Buffer 的例子：
+每一个想在 Shader 中使用的资源都需要通过填写 `VkDescriptorSetLayoutBinding` 结构体，**声明一个用来绑定的资源，即 Descriptor**。这里举一个配置给 Vertex Shader 传入变换矩阵的 Uniform Buffer 的例子：
 
-- `binding`：与 shader 中 `binding` 字段的数字一致，这样就绑定上了，可以看下一章里面的例子。
+- `binding`：与 shader 中 `binding` 字段的数字一致，这样就让客户端的资源和 Pipeline Layout，即 Shader 中的变量 “绑定”上了，可以看下一章里面的例子。
 - `descriptorType `：资源描述类型。这里直接给 `VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER`。
 - `descriptorCount`：资源描述个数。这里只想用一个 Uniform Buffer，因此设置为 1。大于 1 就表示一个数组（Array of Descriptors），在 Shader 中可以直接计算出索引值并索引该数组获取资源，[详见此处](https://www.khronos.org/registry/vulkan/specs/1.2-extensions/man/html/VK_EXT_descriptor_indexing.html)。
-- `stageFlags`：该资源被引用的着色器阶段，这里由于是给顶点着色器做坐标变换用，所以给`VK_SHADER_STAGE_VERTEX_BIT`。
-- `pImmutableSamplers`：在图像采样时才会用到，这里留空，即 `nullptr`。
+- `stageFlags`：该资源被引用的着色器阶段，这里由于是给顶点着色器做坐标变换用，所以给 `VK_SHADER_STAGE_VERTEX_BIT`。
+- `pImmutableSamplers`：在配置不可变采样器（Layout 创建后不允许更改）时才会用到，这里留空，即 `nullptr`。
 
 结构体定义和使用方法如下：
 
@@ -56,6 +56,7 @@ typedef struct VkDescriptorSetLayoutBinding {
 
 ```cpp
 VkDescriptorSetLayoutBinding layoutBinding{};
+
 layoutBinding.binding = 0;
 layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 layoutBinding.descriptorCount = 1;
@@ -63,13 +64,14 @@ layoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 layoutBinding.pImmutableSampler = nullptr;
 ```
 
-> **注意！此处仅仅是在描述一个 Descriptor，但并没有传入任何具体的资源。**
+注意！此处仅仅是在描述一个 Descriptor，但并没有传入任何具体的资源。
 
 
 
 ### 创建资源描述集布局 Descriptor Set Layout
-
 *本章节之后将会简称为 layout。*
+
+多个 Descriptor 在一起，将会组成一个 Descriptor Set（资源描述集），而描述这个 Descriptor Set 布局的对象则被称为 Descriptor Set Layout。
 
 接下来我们终于要创建出这个 Layout 了。创建一个 `VkDescriptorSetLayoutCreateInfo`，里面传入上述所有资源描述的`VkDescriptorSetLayoutBinding`数组。之后，通过`vkCreateDescriptorSetLayout`创建出真正需要的 layout 到成员变量 `VkDescriptorSetLayout descriptorSetLayout` 中。不要忘记在 cleanup 阶段通过`vkDestroyDescriptorSetLayout`进行销毁。
 
@@ -240,15 +242,24 @@ void vkCmdBindDescriptorSets(
 
 注意这里也是通过 `vkCmd` 系列方法，即绑定资源描述集也是一个需要被命令缓冲录下来的命令。后两个参数为 Dynamic Descriptors 的参数，本例先不去管，之后将会在 **Vulkan 进阶** 中 **Dynamic Uniform Buffer** 提及。
 
-一个常见的绘制顺序如下图所示（UE4）。
+一个常见的绘制指令如下：
 
-![image-20220617112142146](image-20220617112142146.png)
+```c++
+vkCmdBindPipeline        // 绑定图形流水线
+vkCmdBindDescriptorSets  // 绑定资源          |
+vkCmdBindIndexBuffer     // 绑定模型的索引缓冲  | 这些操作将不同类型的数据绑定到了图形流水线的 Bind Points 上。
+vkCmdBindVertexBuffer    // 绑定模型的顶点缓冲  |
+vkCmdDrawIndexed         // 绘制指令
+```
+
+
+
 
 ### Descriptor Set 和 Pipeline 的兼容性
 
 我们使用 `vkCmdBindDescriptorSets` 时，并不需要先绑定一个 Pipeline（毕竟该方法只需要传入 Pipeline Layout 即可）。但需要保证 Descriptor Set 和当前绑定的 Pipeline 的[兼容性](https://www.khronos.org/registry/vulkan/specs/1.3-khr-extensions/html/chap14.html#descriptorsets-compatibility)。因此，如果我们的 Descriptor Set 表示的数据能够跨 Pipeline 使用（例如 View 变换矩阵、时间等），我们可以在最开始时绑定这个 Descriptor Set，之后不管 Pipeline 怎么切换（通过 `vkCmdBindPipeline`），只要这个 Set 和所有的 Pipeline 兼容，就可以不重新绑定直接使用。例如下面的绘制伪代码：
 
-```
+```c++
 // https://developer.nvidia.com/vulkan-shader-resource-binding
 
 // example for typical loops in rendering
